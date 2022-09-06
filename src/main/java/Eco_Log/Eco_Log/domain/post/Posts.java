@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.domain.post;
 
 
 import Eco_Log.Eco_Log.controller.dto.PostSaveRequestDto;
+import Eco_Log.Eco_Log.controller.dto.PostUpdateRequestDto;
 import Eco_Log.Eco_Log.domain.BaseTimeEntity;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.tool.StringListConverter;
@@ -49,12 +50,22 @@ public class Posts extends BaseTimeEntity {
     public static Posts createPost(Users users, PostSaveRequestDto saveRequestDto){
         Posts posts = new Posts();
         posts.setUsers(users);
+        posts.setDoingDay(saveRequestDto.getDoingDay());
         posts.setComment(saveRequestDto.getComment());
         posts.setDoingList(saveRequestDto.getDoingList());
         posts.setCustomBehaviorList(saveRequestDto.getCustomizedBehaviors());
 
         return posts;
 
+    }
+
+    //== 게시물 수정 ==//
+    public Long update(PostUpdateRequestDto updateRequestDto){
+        this.setComment(updateRequestDto.getComment());
+        this.setDoingList(updateRequestDto.getDoingList());
+        this.setCustomBehaviorList(updateRequestDto.getCustomizedBehaviors());
+
+        return this.getId();
     }
 
 
