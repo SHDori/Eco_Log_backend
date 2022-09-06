@@ -11,31 +11,31 @@ import java.util.List;
 @NoArgsConstructor
 public class PostSaveRequestDto {
 
-    // 수정필요 연관관계따져서
-    private String userId;
 
     private String comment;
 
     private String doingDay;
 
     private List<String> doingList;
+    // 직접 입력 행동
+    private List<String> customizedBehaviors;
 
 
     @Builder
-    public PostSaveRequestDto(String userId, String comment, String doingDay, List<String> doingList){
-        this.userId= userId;
+    public PostSaveRequestDto(String comment, String doingDay, List<String> doingList,List<String> customizedBehaviors){
+
         this.comment = comment;
         this.doingDay = doingDay;
         this.doingList = doingList;
+        this.customizedBehaviors = customizedBehaviors;
     }
 
-    public Posts toEntity(){
-        return Posts.builder()
-                .userId(userId)
-                .comment(comment)
-                .doingDay(doingDay)
-                .doingList(doingList)
-                .build();
-    }
+//    public Posts toEntity(){
+//        return Posts.builder()
+//                .comment(comment)
+//                .doingDay(doingDay)
+//                .doingList(doingList)
+//                .build();
+//    }
 
 }
