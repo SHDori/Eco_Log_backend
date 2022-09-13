@@ -1,6 +1,7 @@
 package Eco_Log.Eco_Log.domain.user;
 
 
+import Eco_Log.Eco_Log.domain.BaseTimeEntity;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "`Users`")
-public class Users {
+public class Users extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +23,7 @@ public class Users {
 
 
     private String name;
+    private UserRole userRole;
 
     @OneToMany(mappedBy = "users")
     private List<Posts> posts = new ArrayList<>();
@@ -45,5 +47,20 @@ public class Users {
                 ", name='" + name + '\'' +
                 ", posts=" + posts +
                 '}';
+    }
+
+    //== 연관관계 편의 메서드 ==//
+    public void setUserProfile(Profiles profile){
+        this.profiles = profile;
+        profile.setUser(this);
+    }
+
+    //== 생성 메서드==//
+    public static Users createUser(String name,Profiles profiles){
+        Users user = new Users();
+        user.setName(name);
+        user.setUserProfile(profiles);
+        user.setUserRole(UserRole.NORMAL);
+        return user;
     }
 }
