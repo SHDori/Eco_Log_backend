@@ -22,6 +22,7 @@ public class Users extends BaseTimeEntity {
     private Long id;
 
 
+    // sns이름
     private String name;
     private UserRole userRole;
 

@@ -31,7 +31,7 @@ public class Profiles extends BaseTimeEntity {
     private String nickName;
     @Column(name = "sns_email")
     private String email;
-    @Column(name = "selfIntroduce")
+    @Column(name = "self_Introduce")
     private String selfIntroduce;
 
     @Column(name = "user_role")
@@ -41,11 +41,11 @@ public class Profiles extends BaseTimeEntity {
     private Users user;
 
     @Builder
-    public Profiles(Long snsId, String profileImg, String email, String selfIntroduce,String userRole){
+    public Profiles(Long snsId, String profileImg, String email,String userRole){
         this.snsId = snsId;
         this.profileImg = profileImg;
         this.email = email;
-        this.selfIntroduce = selfIntroduce;
+        this.selfIntroduce = "간단한 자기소개글을 적어주세요!";
         this.userRole = userRole;
 
         /**

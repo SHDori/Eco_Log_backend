@@ -13,14 +13,15 @@ public class ProfileDto {
 
     private String profileImg;
     private String email;
-    private String selfIntroduce;
 
 
-    @Builder ProfileDto(Long snsId,String profileImg,String email,String selfIntroduce ){
+
+    @Builder
+    public ProfileDto(Long snsId,String profileImg,String email){
         this.snsId = snsId;
         this.profileImg = profileImg;
         this.email = email;
-        this.selfIntroduce = selfIntroduce;
+
 
     }
 }

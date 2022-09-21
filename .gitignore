@@ -1,6 +1,9 @@
 HELP.md
 .gradle
 
+secretKey.properties
+oauthInfo.properties
+
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
