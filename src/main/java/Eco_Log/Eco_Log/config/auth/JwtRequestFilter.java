@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.config.auth;
 
 import Eco_Log.Eco_Log.domain.jwt.JwtProperties;
 import Eco_Log.Eco_Log.repository.UserRepository;
+import Eco_Log.Eco_Log.service.JwtService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -29,8 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     UserRepository userRepository;
 
-    @Value("${secretKey}")
-    private String secretKey;
+    // 이거문제 해결해야함
+    @Value("SECRET_KEY")
+    private String secretKey = "SECRET_KEY";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response
@@ -48,6 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // user의 id값
         Long userCode = null;
+        System.out.println("secretKey => "+secretKey);
 
         try {
                 userCode = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token)

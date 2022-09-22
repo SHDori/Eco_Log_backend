@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PostSaveRequestDto {
 
-
+    private String userId;
     private String comment;
 
     private String doingDay;
@@ -22,8 +22,8 @@ public class PostSaveRequestDto {
 
 
     @Builder
-    public PostSaveRequestDto(String comment, String doingDay, List<String> doingList,List<String> customizedBehaviors){
-
+    public PostSaveRequestDto(String userId,String comment, String doingDay, List<String> doingList,List<String> customizedBehaviors){
+        this.userId = userId;
         this.comment = comment;
         this.doingDay = doingDay;
         this.doingList = doingList;

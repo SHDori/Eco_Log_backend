@@ -25,12 +25,12 @@ public class PostApiController {
      * 4. 게시물 저장.
      * 5. 뱃지 조건에 맞는지 체크.
      */
-//    @PostMapping("/api/post")
-//    public Long save(@RequestBody PostSaveRequestDto saveDto){
-//        //일단 하드코딩
-//        Long userId = 1L;
-//        return postsService.save(userId,saveDto);
-//    }
+    @PostMapping("/api/post")
+    public Long save(@RequestBody PostSaveRequestDto saveDto){
+        //일단 하드코딩
+
+        return postsService.save(saveDto);
+    }
 
     /**
      * 게시물 수정

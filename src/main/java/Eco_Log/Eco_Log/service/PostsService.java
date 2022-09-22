@@ -29,8 +29,9 @@ public class PostsService {
      * @return
      */
     @Transactional
-    public Long save(Long userId,PostSaveRequestDto saveRequestDto){
+    public Long save(PostSaveRequestDto saveRequestDto){
 
+        Long userId = Long.parseLong(saveRequestDto.getUserId());
         // 0. 엔티티 조회
         Users users = userRepository.findById(userId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 유저가 없습니다. id = "+userId));
