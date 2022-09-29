@@ -26,7 +26,7 @@ public class JwtService {
         String jwtToken = JWT.create()
                 .withSubject(user.getProfiles().getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProperties.EXPIRATION_TIME))
-                .withClaim("id",user.getId())
+                .withClaim("userId",user.getId())
                 .withClaim("nickname",user.getProfiles().getNickName())
                 .sign(Algorithm.HMAC512(secretKey));
         return jwtToken;

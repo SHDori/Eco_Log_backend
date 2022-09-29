@@ -96,10 +96,11 @@ public class UserServie {
     }
 
     public CurrentUserDto getCurrentUser(HttpServletRequest request){
-        Long userCode = (Long) request.getAttribute("userCode");
+        System.out.println(request);
+        Long userId = (Long) request.getAttribute("userId");
 
-        Users user = userRepository.findById(userCode)
-                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ userCode));
+        Users user = userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ userId));
         return CurrentUserDto.builder()
                 .userId(user.getId())
                 .nickNamem(user.getProfiles().getNickName())
@@ -110,13 +111,7 @@ public class UserServie {
     public OauthToken getKakaoAccessToken(String code){
 
         RestTemplate rt = new RestTemplate();
-//        rt.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-//        rt.setErrorHandler(new DefaultResponseErrorHandler(){
-//            public boolean hasError(ClientHttpResponse response) throws IOException{
-//                HttpStatus statusCode = response.getStatusCode();
-//                return statusCode.series() == HttpStatus.Series.SERVER_ERROR;
-//            }
-//        });
+
 
 
 
