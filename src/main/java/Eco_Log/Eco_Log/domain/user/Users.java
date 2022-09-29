@@ -33,8 +33,8 @@ public class Users extends BaseTimeEntity {
     @JoinColumn(name = "profile_id")
     private Profiles profiles;
 //
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL )
-//    private Summary summary;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL )
+    private Summary summary;
 //
 //    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "badge_id")
@@ -56,10 +56,22 @@ public class Users extends BaseTimeEntity {
         profile.setUser(this);
     }
 
+    public void setUserSummary(Summary summary){
+        this.summary = summary;
+        summary.setUser(this);
+    }
+
     //== 생성 메서드==//
-    public static Users createUser(String name,Profiles profiles){
+    public static Users createUser(String name,Profiles profiles,Summary summary){
         Users user = new Users();
         user.setName(name);
+        ////////////////////////
+        // 일단 임시로 이렇게
+        System.out.println("---------------------------------------");
+
+        user.setUserSummary(summary);
+        System.out.println(summary);
+        /////////////////////////
         user.setUserProfile(profiles);
         user.setUserRole(UserRole.NORMAL);
         return user;

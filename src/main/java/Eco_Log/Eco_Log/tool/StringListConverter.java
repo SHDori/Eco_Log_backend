@@ -11,6 +11,8 @@ import java.util.Objects;
 public class StringListConverter implements AttributeConverter<List<String>, String> {
     private static final String SPLIT_CHAR = ";";
 
+    // 프론트에서 기록넘어올때 List로 담겨오는데
+    // List안에있는것을 ;라는 구분자로 이어서 한줄의 String으로 만듬
     @Override
     public String convertToDatabaseColumn(List<String> stringList) {
         if(Objects.isNull(stringList)){

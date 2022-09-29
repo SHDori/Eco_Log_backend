@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -38,10 +40,13 @@ public class UserController {
         // 2. 처음 로그인한 사람이면 kakao에 프로필정보를 받아오고 access토큰을 기반으로 jwt토큰을 발행
         String jwtToken = userService.saveKakaoUserAndGetJwtToken(oauthToken.getAccess_token());
         System.out.println("JWT 토큰 => "+ jwtToken);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+        Map<String,String> jwtResult = new HashMap<>();
+        jwtResult.put(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + jwtToken);
 
-        return ResponseEntity.ok().headers(headers).body("success");
+//        return ResponseEntity.ok().headers(headers).body("success");
+        return ResponseEntity.ok().body(jwtResult);
     }
 
     // 인증된 사용자 정보 반환

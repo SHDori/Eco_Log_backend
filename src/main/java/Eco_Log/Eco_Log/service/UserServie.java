@@ -5,6 +5,7 @@ import Eco_Log.Eco_Log.controller.dto.CurrentUserDto;
 import Eco_Log.Eco_Log.controller.dto.OauthToken;
 import Eco_Log.Eco_Log.controller.dto.ProfileDto;
 import Eco_Log.Eco_Log.domain.user.Profiles;
+import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.domain.user.dto.KakaoProfile;
 import Eco_Log.Eco_Log.repository.UserRepository;
@@ -60,8 +61,9 @@ public class UserServie {
                 .profileImg(profileDto.getProfileImg())
                 .email(profileDto.getEmail())
                 .build();
+        Summary summary = new Summary();
 
-        Users user = Users.createUser(name,profile);
+        Users user = Users.createUser(name,profile,summary);
         userRepository.save(user);
         return user;
     }
@@ -69,7 +71,7 @@ public class UserServie {
 
 
 
-
+    // access Token을 받아모
     public String saveKakaoUserAndGetJwtToken(String token){
 
         // 1. access 토큰으로 kakao에서 프로필정보를 가져옴
@@ -122,24 +124,28 @@ public class UserServie {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
+
+        System.out.println("Header까지 생성완료");
         // Body생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-
+        
         // 여기는 Front와 상의 ㄱㄱ
         params.add("client_id", kakaoClientId);
         params.add("redirect_uri", FRONT_URL);
         params.add("code", code);
         params.add("client_secret", kakaoClientSecret);
 
-        System.out.println("Header까지 생성완료");
+        
 
         System.out.println("client_id" + kakaoClientId);
-
+        System.out.println("redirect_url"+ FRONT_URL);
+        System.out.println("auth 코드"+ code);
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(params, headers);
 
         // kakao에 request를 보내고 ResponseEntity로 답을 받는다.
+        System.out.println("kakaoTokenRequest =>"+ kakaoTokenRequest);
         ResponseEntity<String> accessTokenResponse = rt.exchange(
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
