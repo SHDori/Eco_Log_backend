@@ -1,15 +1,19 @@
 package Eco_Log.Eco_Log.service;
 
-import Eco_Log.Eco_Log.controller.dto.PostListResponseDTO;
-import Eco_Log.Eco_Log.controller.dto.PostSaveRequestDto;
-import Eco_Log.Eco_Log.controller.dto.PostUpdateRequestDto;
-import Eco_Log.Eco_Log.controller.dto.ProfileDto;
+import Eco_Log.Eco_Log.controller.dto.*;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostListResponseDTO;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
+import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.domain.user.Users;
+import Eco_Log.Eco_Log.repository.BehaviorRepository;
+import Eco_Log.Eco_Log.repository.PRconnectRepository;
 import Eco_Log.Eco_Log.repository.PostsRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,32 +39,66 @@ public class PostsServiceTest {
     @Autowired
     PostsService postsService;
 
+    @Autowired
+    BehaviorRepository behaviorRepository;
+    @Autowired
+    PRconnectRepository pRconnectRepository;
+
+    @Before
+    public void makeBehaviors(){
+        Behaviors behaviors = new Behaviors("친환경 상점 이용");
+        behaviorRepository.save(behaviors);
+
+        Behaviors behaviors1 = new Behaviors("중고거래");
+        behaviorRepository.save(behaviors1);
+        Behaviors behaviors2 = new Behaviors("기부와 나눔");
+        behaviorRepository.save(behaviors2);
+
+    }
+
     @After
     public void cleanup(){
         postsRepository.deleteAll();
         userRepository.deleteAll();
+
     }
+
+
 
     @Test
     public void 게시글_저장(){
         //given
         Users users = createUser();
-
+        Users users1 = createUser_1();
 
         String doingDay = "2022-8-18";
 
-        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
-
+        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay);
+        PostSaveRequestDto saveRequestDto_2 = getSaveRequestDto_1(doingDay);
         // when
-        Long postsId = postsService.save(saveRequestDto);
+        Long postsId = postsService.save(users.getId(),saveRequestDto);
+        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1);
+
+        Long postsId_2 = postsService.save(users1.getId(),saveRequestDto_2);
+
 
         // then
         Users getUsers = userRepository.findById(users.getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+ users.getId()));
         Posts getPosts = postsRepository.findById(postsId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+postsId));
-        System.out.print("Post에서 getDoingList를 하면 =>");
-        System.out.println(getPosts.getDoingList());
+        List<SummaryInfoDTO> userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
+        List<SummaryInfoDTO> otherUserSummaryInfoList = pRconnectRepository.summaryFindByUserID(users1.getId());
+
+        System.out.println("기존 user"+users);
+        System.out.println("user summary정보=>");
+        System.out.println(userSummaryInfoList);
+
+        System.out.println("다른 user"+users1);
+        System.out.println("anOther user summary정보=>");
+        System.out.println(otherUserSummaryInfoList);
+
         System.out.println(getUsers.toString());
         System.out.println(getPosts);
 
@@ -68,34 +106,10 @@ public class PostsServiceTest {
         Assert.assertEquals("게시글이 잘 저장되어야한다.",saveRequestDto.getComment(),getPosts.getComment());
         Assert.assertEquals("게시글에 유저정보가 잘 들어가있어야한다.",getPosts.getUsers().getId(), getUsers.getId());
 
-
+        Assert.assertEquals("User의 Summary정보의 길이는 3이어야한다.", 3, userSummaryInfoList.size());
     }
 
-    @Test
-    public void 게시글_저장_요약정보까지(){
-        //given
-        Users users = createUser();
 
-
-        String doingDay = "2022-8-18";
-
-        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
-
-        // when
-        Long postsId = postsService.save(saveRequestDto);
-
-        // then
-        Users getUsers = userRepository.findById(users.getId())
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+ users.getId()));
-        Posts getPosts = postsRepository.findById(postsId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+postsId));
-
-        System.out.print("User의 Summary => ");
-        System.out.println(getUsers.getSummary().toString());
-
-        Assert.assertEquals("User의 정보가 같아야한다.", users.getName(), getUsers.getName());
-        Assert.assertEquals("User의 SummaryCount가 잘 올라가야한다",2,getUsers.getSummary().getCountOfConsumption());
-    }
 
     @Test
     public void 게시글_수정(){
@@ -104,34 +118,37 @@ public class PostsServiceTest {
 
 
         String doingDay = "2022-8-18";
-        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
-        Long targetPostId = postsService.save(saveRequestDto);
-        System.out.print("User의 변경전 Summary => ");
-        System.out.println(users.getSummary().toString());
+        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+        Long targetPostId = postsService.save(users.getId(),saveRequestDto);
+        List<SummaryInfoDTO> userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
+        System.out.println("user summary정보=>");
+        System.out.println(userSummaryInfoList);
 
         String chagedComment ="이건 수정된 말이야!";
-        List<String> changedDoingList = new ArrayList<>();
-        changedDoingList.add("한끼 채식");
-        changedDoingList.add("배달음식 자제");
-        changedDoingList.add("잔반 없음");
-        changedDoingList.add("텀블러 소지");
+
+        List<String> changedBehaviorsList = new ArrayList<>();
+        changedBehaviorsList.add("2");
+        changedBehaviorsList.add("3");
         PostUpdateRequestDto updateRequestDto = PostUpdateRequestDto.builder()
                 .postId(targetPostId)
                 .comment(chagedComment)
-                .doingList(changedDoingList)
+                .behaviorList(changedBehaviorsList)
                 .build();
         // when
         postsService.update(users.getId(), updateRequestDto);
 
-        System.out.print("User의 수정후 Summary => ");
-        System.out.println(users.getSummary().toString());
+
         // then
         Posts getPosts = postsRepository.findById(targetPostId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+targetPostId));
 
+        userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
+        System.out.println("user summary정보=>");
+        System.out.println(userSummaryInfoList);
+
+        Assert.assertEquals("User의 Summary정보의 길이는 2이어야한다.", 2, userSummaryInfoList.size());
         Assert.assertEquals("Comment가 잘 바뀌어 있어야한다.", chagedComment, getPosts.getComment());
-        Assert.assertEquals("기존의 SummaryCount가 잘 내려가야한다",0,users.getSummary().getCountOfConsumption());
-        Assert.assertEquals("User의 SummaryCount가 잘 올라가야한다",3,users.getSummary().getCountOfEat());
+
     }
 
     @Test
@@ -140,11 +157,12 @@ public class PostsServiceTest {
         Users users = createUser();
         String doingDay = "2022-8-18";
 
-        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
+        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay);
         // when
-        Long postsId = postsService.save(saveRequestDto);
-        System.out.print("User의 삭제전 Summary => ");
-        System.out.println(users.getSummary().toString());
+        Long postsId = postsService.save(users.getId(),saveRequestDto);
+        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1);
+
 
         postsService.delete(users.getId(),postsId);
 
@@ -152,10 +170,14 @@ public class PostsServiceTest {
         Users getUsers = userRepository.findById(users.getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+ users.getId()));
 
-        System.out.print("User의 Summary => ");
-        System.out.println(getUsers.getSummary().toString());
+        List<SummaryInfoDTO> userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
 
-        Assert.assertEquals("User의 SummaryCount가 잘 내려가야한다",0,getUsers.getSummary().getCountOfConsumption());
+        System.out.println("user summary정보=>");
+        System.out.println(userSummaryInfoList);
+
+
+        Assert.assertEquals("User의 Post수가 잘 줄어들어야한다",1,users.getPosts().size());
+        Assert.assertEquals("Summary가 잘 줄어들어야한다",1,userSummaryInfoList.size());
     }
 
 
@@ -168,13 +190,13 @@ public class PostsServiceTest {
 
         for (int i=1;i<=10;i++){
             String doingDay = "2022-8-"+i;
-            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
-            postsService.save(saveRequestDto);
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(),saveRequestDto);
         }
         for (int i=1;i<=5;i++){
             String doingDay = "2022-7-"+i;
-            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay,users.getId());
-            postsService.save(saveRequestDto);
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(),saveRequestDto);
         }
 
         // when
@@ -188,23 +210,43 @@ public class PostsServiceTest {
 
 
 
-    private PostSaveRequestDto getSaveRequestDto(String doingDay,Long userId) {
+    private PostSaveRequestDto getSaveRequestDto(String doingDay) {
         String comment ="오늘도 수고많았다";
 
 
-        List<String> doingList = new ArrayList<>();
-        doingList.add("친환경 상점 이용");
-        doingList.add("소비 없는 하루");
-        doingList.add("대중교통 이용");
+
+        List<String> behaviorsList = new ArrayList<>();
+        behaviorsList.add("1");
+        behaviorsList.add("2");
+        behaviorsList.add("3");
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()
-                .userId(String.valueOf(userId))
                 .doingDay(doingDay)
-                .doingList(doingList)
+                .behaviorList(behaviorsList)
                 .comment(comment)
                 .build();
         return saveRequestDto;
     }
+    private PostSaveRequestDto getSaveRequestDto_1(String doingDay) {
+        String comment ="오늘도 지구를 위하여!";
+
+
+
+        List<String> behaviorsList = new ArrayList<>();
+
+        behaviorsList.add("2");
+
+        PostSaveRequestDto saveRequestDto = PostSaveRequestDto
+                .builder()
+                .behaviorList(behaviorsList)
+                .doingDay(doingDay)
+
+                .comment(comment)
+                .build();
+        return saveRequestDto;
+    }
+
+
 
     private Users createUser() {
         //given
@@ -220,6 +262,23 @@ public class PostsServiceTest {
                 .build();
         //when
         Users savedUser = userServie.save("김승환",profileDto);
+        return savedUser;
+    }
+
+    private Users createUser_1() {
+        //given
+        Long snsID = 2L;
+        String profileImg = "임의의 이미지주소";
+
+        String email = "zzang@naver.com";
+        ProfileDto profileDto = ProfileDto.builder()
+                .snsId(snsID)
+                .profileImg(profileImg)
+                .email(email)
+
+                .build();
+        //when
+        Users savedUser = userServie.save("승도리",profileDto);
         return savedUser;
     }
 

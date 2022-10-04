@@ -1,4 +1,4 @@
-package Eco_Log.Eco_Log.controller.dto;
+package Eco_Log.Eco_Log.controller.dto.postDto;
 
 import Eco_Log.Eco_Log.domain.post.Posts;
 import lombok.Builder;
@@ -11,23 +11,26 @@ import java.util.List;
 @NoArgsConstructor
 public class PostSaveRequestDto {
 
-    private String userId;
+
     private String comment;
 
     private String doingDay;
 
-    private List<String> doingList;
+//    private List<String> doingList;
     // 직접 입력 행동
     private List<String> customizedBehaviors;
 
+    private List<String> behaviorList;
+
 
     @Builder
-    public PostSaveRequestDto(String userId,String comment, String doingDay, List<String> doingList,List<String> customizedBehaviors){
-        this.userId = userId;
+    public PostSaveRequestDto(String comment, String doingDay,List<String> customizedBehaviors,List<String>behaviorList){
+
         this.comment = comment;
         this.doingDay = doingDay;
-        this.doingList = doingList;
+
         this.customizedBehaviors = customizedBehaviors;
+        this.behaviorList = behaviorList;
     }
 
 //    public Posts toEntity(){

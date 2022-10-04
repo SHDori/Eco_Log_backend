@@ -1,4 +1,4 @@
-package Eco_Log.Eco_Log.controller.dto;
+package Eco_Log.Eco_Log.controller.dto.postDto;
 
 
 import Eco_Log.Eco_Log.domain.post.Posts;
@@ -21,7 +21,7 @@ public class PostListResponseDTO {
         this.userName = posts.getUsers().getName();
         this.doingDay = posts.getDoingDay();
         this.comment = posts.getComment();
-        this.doingList = posts.getDoingList();
+
         this.customBehaviorList = posts.getCustomBehaviorList();
     }
 

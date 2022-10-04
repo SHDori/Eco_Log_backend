@@ -1,21 +1,19 @@
 package Eco_Log.Eco_Log.controller;
 
 
-import Eco_Log.Eco_Log.controller.dto.CurrentUserDto;
-import Eco_Log.Eco_Log.controller.dto.OauthToken;
+import Eco_Log.Eco_Log.controller.dto.*;
 import Eco_Log.Eco_Log.domain.jwt.JwtProperties;
 import Eco_Log.Eco_Log.domain.user.Users;
+import Eco_Log.Eco_Log.service.ProfileService;
 import Eco_Log.Eco_Log.service.UserServie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -25,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserServie userService;
+
+    @Autowired
+    private ProfileService profileService;
 
     // 카카오 로그인
     // 프론트로부터 인가코드를 받는다.
@@ -60,6 +61,33 @@ public class UserController {
         //(3)
         return ResponseEntity.ok().body(currentUserDto);
     }
+
+    @GetMapping("/user/summary")
+    public List<SummaryInfoDTO> getUserSummary(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+
+        return userService.findSummaryByUserId(userId);
+    }
+
+
+    @GetMapping("/user/profile")
+    public ProfileViewResponseDto getUserProfile(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+
+        return userService.getUserProfileInfo(userId);
+    }
+
+
+    @PostMapping("/user/profile")
+    public Long profileUpdate(HttpServletRequest request, @RequestBody ProfileUpdateRequestDto updateRequestDto){
+        Long userId = (Long) request.getAttribute("userId");
+
+
+        return profileService.update(userId,updateRequestDto);
+    }
+
+
+
 
 
 

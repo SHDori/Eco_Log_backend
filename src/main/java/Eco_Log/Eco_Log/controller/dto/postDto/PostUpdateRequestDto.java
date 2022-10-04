@@ -1,4 +1,4 @@
-package Eco_Log.Eco_Log.controller.dto;
+package Eco_Log.Eco_Log.controller.dto.postDto;
 
 
 import lombok.Builder;
@@ -22,16 +22,19 @@ public class PostUpdateRequestDto {
     // 수정필요 연관관계따져서
     private String comment;
 
-    private List<String> doingList;
+
     // 직접 입력 행동
     private List<String> customizedBehaviors;
 
+    private List<String> behaviorList;
+
     @Builder
-    public PostUpdateRequestDto(Long postId,String comment, List<String> doingList,List<String> customizedBehaviors){
+    public PostUpdateRequestDto(Long postId,String comment,List<String> customizedBehaviors,List<String>behaviorList){
 
         this.postId = postId;
         this.comment = comment;
-        this.doingList = doingList;
+
         this.customizedBehaviors = customizedBehaviors;
+        this.behaviorList = behaviorList;
     }
 }

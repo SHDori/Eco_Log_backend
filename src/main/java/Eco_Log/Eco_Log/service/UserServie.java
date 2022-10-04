@@ -1,13 +1,12 @@
 package Eco_Log.Eco_Log.service;
 
 
-import Eco_Log.Eco_Log.controller.dto.CurrentUserDto;
-import Eco_Log.Eco_Log.controller.dto.OauthToken;
-import Eco_Log.Eco_Log.controller.dto.ProfileDto;
+import Eco_Log.Eco_Log.controller.dto.*;
 import Eco_Log.Eco_Log.domain.user.Profiles;
 import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.domain.user.dto.KakaoProfile;
+import Eco_Log.Eco_Log.repository.PRconnectRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.util.List;
 
 import static Eco_Log.Eco_Log.config.SecurityConfig.FRONT_URL;
 
@@ -40,7 +40,8 @@ public class UserServie {
 
     @Autowired
     private final UserRepository userRepository;
-
+    @Autowired
+    private final PRconnectRepository pRconnectRepository;
     @Autowired
     private final JwtService jwtService;
 
@@ -192,6 +193,28 @@ public class UserServie {
         }
 
         return kakaoProfile;
+
+    }
+
+
+    /**
+     * summary 조회
+     */
+    public List<SummaryInfoDTO> findSummaryByUserId(Long userId){
+
+        return pRconnectRepository.summaryFindByUserID(userId);
+
+    }
+
+    public ProfileViewResponseDto getUserProfileInfo(Long userId){
+
+        Users targetUser = userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ userId));
+
+        List<SummaryInfoDTO> targetUserSummary = findSummaryByUserId(userId);
+
+        // total Count는 추후 수정
+        return new ProfileViewResponseDto(userId,targetUser.getProfiles().getNickName(), (long) targetUser.getPosts().size(),targetUserSummary);
 
     }
 }

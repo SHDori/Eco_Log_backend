@@ -1,8 +1,8 @@
 package Eco_Log.Eco_Log.domain.post;
 
 
-import Eco_Log.Eco_Log.controller.dto.PostSaveRequestDto;
-import Eco_Log.Eco_Log.controller.dto.PostUpdateRequestDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
 import Eco_Log.Eco_Log.domain.BaseTimeEntity;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.tool.StringListConverter;
@@ -11,16 +11,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "Posts")
 public class Posts extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "posts_id")
     private Long id;
 
     // 연관 관계 조정
@@ -34,8 +37,12 @@ public class Posts extends BaseTimeEntity {
     // 수행한 날
     private String doingDay;
 
-    @Convert(converter = StringListConverter.class)
-    private List<String> doingList;
+
+
+
+    // 실천 Id값만만
+    @OneToMany(mappedBy = "posts")
+    private List<PRconnect> pRconnects = new ArrayList<>();
 
     @Convert(converter = StringListConverter.class)
     private List<String> customBehaviorList;
@@ -52,8 +59,13 @@ public class Posts extends BaseTimeEntity {
         posts.setUsers(users);
         posts.setDoingDay(saveRequestDto.getDoingDay());
         posts.setComment(saveRequestDto.getComment());
-        posts.setDoingList(saveRequestDto.getDoingList());
+
         posts.setCustomBehaviorList(saveRequestDto.getCustomizedBehaviors());
+
+
+        // 연결테이블 생성
+
+
 
         return posts;
 
@@ -62,11 +74,17 @@ public class Posts extends BaseTimeEntity {
     //== 게시물 수정 ==//
     public Long update(PostUpdateRequestDto updateRequestDto){
         this.setComment(updateRequestDto.getComment());
-        this.setDoingList(updateRequestDto.getDoingList());
         this.setCustomBehaviorList(updateRequestDto.getCustomizedBehaviors());
+
 
         return this.getId();
     }
 
+    @Override
+    public String toString() {
+        return "Posts{" +
+                "users=" + users.getName() +
 
+                '}';
+    }
 }

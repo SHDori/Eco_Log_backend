@@ -1,11 +1,13 @@
 package Eco_Log.Eco_Log.controller;
 
-import Eco_Log.Eco_Log.controller.dto.PostSaveRequestDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.*;
 import Eco_Log.Eco_Log.service.PostsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -26,10 +28,11 @@ public class PostApiController {
      * 5. 뱃지 조건에 맞는지 체크.
      */
     @PostMapping("/api/post")
-    public Long save(@RequestBody PostSaveRequestDto saveDto){
+    public Long save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
+        Long userId = (Long) request.getAttribute("userId");
         //일단 하드코딩
 
-        return postsService.save(saveDto);
+        return postsService.save(userId,saveDto);
     }
 
     /**
@@ -44,6 +47,13 @@ public class PostApiController {
      * 6. 게시물 수정.
      * 7. 뱃지 조건에 맞는지 체크.
      */
+    @PutMapping("/api/post/change")
+    public Long postUpdate(HttpServletRequest request, @RequestBody PostUpdateRequestDto updateRequestDto){
+        Long userId = (Long) request.getAttribute("userId");
+        //일단 하드코딩
+
+        return postsService.update(userId,updateRequestDto);
+    }
 
 
     /**
@@ -54,13 +64,50 @@ public class PostApiController {
      *   해당하는 index의 user 의 활동 count데이터를 -1 씩해준다.
      * 4. 게시물 삭제.
      */
-
+    @DeleteMapping("/api/post")
+    public Long postDelete(HttpServletRequest request, @RequestBody PostDeleteRequestDto deleteRequestDto){
+        Long userId = (Long) request.getAttribute("userId");
+        //일단 하드코딩
+        Long targetPostId = deleteRequestDto.getPostId();
+        return postsService.delete(userId,targetPostId);
+    }
 
     /**
-     * 게시물 월단위 조회
+     * 게시물 월단위 조회 => for 캘린더 마킹을 위해
      * 1. 조회하려는 월을 Parameter로 받는다.
-     * 2. 조회하려는 월 + 사용자 정보 + Following정보를 조합해서 List<Post>로 반환.
+     * 2. 조회하려는 월 + 사용자 정보 + Following정보를 조합해서 List<String>로 반환.
      */
+    @GetMapping("/api/post/Monthly")
+    public List<String> findMonthlyPostingDayForMarking(HttpServletRequest request,@RequestParam("month") String targetMonth){
+        Long userId = (Long) request.getAttribute("userId");
+        List<PostListResponseDTO> targetMonthPostingData =postsService.findPostByMonth(userId,targetMonth);
+        List<String> postingDayList = new ArrayList<>();
+
+        for (PostListResponseDTO data:targetMonthPostingData){
+            postingDayList.add(data.getDoingDay());
+        }
+
+        return postingDayList;
+
+    }
+
+    /**
+     * 게시물 일단위 조회 => for 캘린더 마킹을 위해
+     * 1. 조회하려는 일을 Parameter로 받는다.
+     * 2. 조회하려는 일 + 사용자 정보 + Following정보를 조합해서 List<Post>로 반환.
+     */
+    @GetMapping("/api/post/daily")
+    public List<PostViewResponseDto> findAllpostingByDay(HttpServletRequest request, @RequestParam("day") String targetDay){
+        Long userId = (Long) request.getAttribute("userId");
+
+
+        return postsService.findPostByDay(userId,targetDay);
+
+    }
+
+
+
+
 
 
 

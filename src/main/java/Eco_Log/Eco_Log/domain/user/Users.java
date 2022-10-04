@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.domain.user;
 
 
 import Eco_Log.Eco_Log.domain.BaseTimeEntity;
+import Eco_Log.Eco_Log.domain.post.PRconnect;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,11 +36,28 @@ public class Users extends BaseTimeEntity {
 //
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     private Summary summary;
+
+    ////////////// Follow 관련
+    // 내가 follow하는 사람들 => 내가 fromUser인경우
+//    @OneToMany(mappedBy = "users")
+//    private List<Follow> followingList = new ArrayList<>();
+//
+////    // 나를 follow하는 사람들 => 내가 toUser인경우
+//    @OneToMany(mappedBy = "users")
+//    private List<Follow> followerList = new ArrayList<>();
+
+
+
+    /////////////
+
 //
 //    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "badge_id")
 //    private Badge badge;
 
+    public void deletePost(Posts targetPost){
+        this.posts.remove(targetPost);
+    }
 
     @Override
     public String toString() {

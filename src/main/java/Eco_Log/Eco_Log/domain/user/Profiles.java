@@ -1,5 +1,6 @@
 package Eco_Log.Eco_Log.domain.user;
 
+import Eco_Log.Eco_Log.controller.dto.ProfileUpdateRequestDto;
 import Eco_Log.Eco_Log.domain.BaseTimeEntity;
 import Eco_Log.Eco_Log.domain.user.randomNickName.RandomNicknamaMaker;
 import lombok.Builder;
@@ -54,6 +55,13 @@ public class Profiles extends BaseTimeEntity {
         RandomNicknamaMaker randomNicknamaMaker=new RandomNicknamaMaker();
         this.nickName = randomNicknamaMaker.getRandomNickName();
 
+    }
+
+    public Long update(ProfileUpdateRequestDto updateRequestDto){
+        this.setNickName(updateRequestDto.getNickName());
+        this.setSelfIntroduce(updateRequestDto.getSelfIntroduce());
+
+        return this.getUser().getId();
     }
 
 }

@@ -16,4 +16,7 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
     // 게시물 월단위로 조회
     @Query("SELECT p FROM Posts p WHERE p.doingDay LIKE %:month% AND p.users.id = :uid")
     List<Posts> findByMonth(@Param("uid") Long uid, @Param("month") String month);
+
+    @Query("SELECT p FROM Posts p WHERE p.doingDay LIKE %:day% AND p.users.id = :uid")
+    Posts findByDay(@Param("uid") Long uid, @Param("day") String day);
 }
