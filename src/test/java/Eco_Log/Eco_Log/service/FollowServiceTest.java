@@ -65,7 +65,9 @@ public class FollowServiceTest {
         //then
 
         List<Follow> user1FollowingList = followRepository.findMyFollowingByUserId(users1.getId());
+        List<Long> user1FollowingUserIdList = followRepository.findMyFollowingUserIdByFromUserId(users1.getId());
         System.out.println(user1FollowingList);
+        System.out.println(user1FollowingUserIdList);
         Assert.assertEquals("User1의 Follwing은 2명이어야한다",2, user1FollowingList.size());
 
 

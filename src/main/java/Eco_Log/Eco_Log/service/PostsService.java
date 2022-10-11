@@ -10,10 +10,7 @@ import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.post.PRconnect;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.domain.user.Users;
-import Eco_Log.Eco_Log.repository.BehaviorRepository;
-import Eco_Log.Eco_Log.repository.PRconnectRepository;
-import Eco_Log.Eco_Log.repository.PostsRepository;
-import Eco_Log.Eco_Log.repository.UserRepository;
+import Eco_Log.Eco_Log.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +28,7 @@ public class PostsService {
     private final BehaviorRepository behaviorRepository;
     private final PRconnectRepository pRconnectRepository;
     private final BehaviorMappingService behaviorMappingService;
+    private final FollowRepository followRepository;
 
 
     /**
@@ -158,7 +156,7 @@ public class PostsService {
     }
 
     /**
-     * 일 단위 게시물 조회하기
+     * 일 단위 게시물 조회하기 => 초기버전 내 게시물만 조회
      * 1. 해당날짜의 user의 게시물들을 다 조회.(나중엔 Following들도)
      *      < 유저별로 >
      *      2. 그 특정된 PostID를가지고있는 PRconnect(행동연결정보)를 다 조회
@@ -186,6 +184,55 @@ public class PostsService {
         PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment());
         postsByDay.add(postData);
         return postsByDay;
+    }
+
+// 테스트중
+
+    /**
+     * 일 단위 게시물 조회하기 => 팔로윙 유저들꺼까지다
+     * 1. 해당날짜의 user의 게시물들을 다 조회.(나중엔 Following들도)
+     *      < 유저별로 >
+     *      2. 그 특정된 PostID를가지고있는 PRconnect(행동연결정보)를 다 조회
+     *      3. 행동ID를 기반으로 다 돌면서 List에 이름으로 넣음
+     * 4. 반환
+     */
+    public List<PostViewResponseDto> findFollowingPostByDay(Long userId, String day){
+        List<PostViewResponseDto> postsByDay = new ArrayList<>();
+
+        Users user =  userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 유저가 없습니다. id = "+userId));
+        // 어떤 post를 가져와야하는 user들 list => 나 + 내following들
+        List<Long> targetUserList = new ArrayList<>();
+        targetUserList.add(user.getId());
+        List<Long> myFollowing = followRepository.findMyFollowingUserIdByFromUserId(user.getId());
+        for(Long targetUserId : myFollowing){
+            targetUserList.add(targetUserId);
+        }
+
+        for(Long targetUserId : targetUserList){
+            Posts targetPost = postsRepository.findByDay(targetUserId,day);
+            if(targetPost == null){
+                continue;
+            }
+            else{
+                // 그날에 대상user의 글이있다면
+                List<PRconnect> prList = pRconnectRepository.findAllByPostId(targetPost.getId());
+                List<String> behaviorList = new ArrayList<>();
+                for(PRconnect data:prList){
+                    Behaviors behaviors = behaviorRepository.findById(data.getBehaviors().getId())
+                            .orElseThrow(()-> new IllegalArgumentException("해당 행동이 없습니다. id = "+data.getBehaviors().getId()));
+                    behaviorList.add(behaviors.getName());
+                }
+
+                UserSimpleInfoInPostDto userInfo = new UserSimpleInfoInPostDto(user.getId(),user.getProfiles().getNickName(),user.getProfiles().getSelfIntroduce());
+                PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment());
+                postsByDay.add(postData);
+            }
+
+        }
+        return postsByDay;
+
+
     }
 
 

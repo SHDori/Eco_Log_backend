@@ -4,6 +4,7 @@ import Eco_Log.Eco_Log.controller.dto.*;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostListResponseDTO;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.PostViewResponseDto;
 import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -43,6 +44,8 @@ public class PostsServiceTest {
     BehaviorRepository behaviorRepository;
     @Autowired
     PRconnectRepository pRconnectRepository;
+    @Autowired
+    FollowService followService;
 
     @Before
     public void makeBehaviors(){
@@ -209,6 +212,59 @@ public class PostsServiceTest {
     }
 
 
+    @Test
+    public void 특정일짜_following_게시글까지_조회(){
+
+        // given
+        Users users1 = createCustomUser(0L,"김승환");
+        Users users2 = createCustomUser(1L,"김강민");
+        Users users3 = createCustomUser(2L,"최지훈");
+        //1 의 following => 2,3  // 2의 following => 없음// 3의 following => 2
+        followService.makeFollowRelation(users1.getId(),users2.getId());
+        followService.makeFollowRelation(users1.getId(),users3.getId());
+        followService.makeFollowRelation(users3.getId(),users2.getId());
+
+        String doingDay = "2022-8-18";
+        // user 1꺼
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto(doingDay);
+        // user 2꺼
+        PostSaveRequestDto saveRequestDto_2 = getSaveRequestDto_1(doingDay);
+        // user 3꺼
+        PostSaveRequestDto saveRequestDto_3 = getSaveRequestDto_1(doingDay);
+
+        postsService.save(users1.getId(), saveRequestDto_1);
+        postsService.save(users2.getId(), saveRequestDto_2);
+        postsService.save(users3.getId(), saveRequestDto_3);
+
+        // when
+
+
+
+        List<PostViewResponseDto> user1_followingPostByDay =
+                postsService.findFollowingPostByDay(users1.getId(), doingDay);
+        List<PostViewResponseDto> user2_followingPostByDay =
+                postsService.findFollowingPostByDay(users2.getId(), doingDay);
+        List<PostViewResponseDto> user3_followingPostByDay =
+                postsService.findFollowingPostByDay(users3.getId(), doingDay);
+
+        // then
+        Assert.assertEquals("User1의 특정날짜 follower게시물의 수가 3이여야한다",3, user1_followingPostByDay.size());
+        Assert.assertEquals("User2의 특정날짜 follower게시물의 수가 1이여야한다",1, user2_followingPostByDay.size());
+        Assert.assertEquals("User3의 특정날짜 follower게시물의 수가 2이여야한다",2, user3_followingPostByDay.size());
+    }
+
+
+
+
+
+
+
+
+
+
+    // 편의 메서드들
+
+
 
     private PostSaveRequestDto getSaveRequestDto(String doingDay) {
         String comment ="오늘도 수고많았다";
@@ -279,6 +335,24 @@ public class PostsServiceTest {
                 .build();
         //when
         Users savedUser = userServie.save("승도리",profileDto);
+        return savedUser;
+    }
+
+
+    private Users createCustomUser(Long snsId,String name) {
+        //given
+        Long snsID = snsId;
+        String profileImg = "임의의 이미지주소";
+
+        String email = "narasarang@naver.com";
+        ProfileDto profileDto = ProfileDto.builder()
+                .snsId(snsID)
+                .profileImg(profileImg)
+                .email(email)
+
+                .build();
+        //when
+        Users savedUser = userServie.save(name,profileDto);
         return savedUser;
     }
 

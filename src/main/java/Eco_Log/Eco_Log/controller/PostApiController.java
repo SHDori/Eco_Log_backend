@@ -96,12 +96,26 @@ public class PostApiController {
      * 1. 조회하려는 일을 Parameter로 받는다.
      * 2. 조회하려는 일 + 사용자 정보 + Following정보를 조합해서 List<Post>로 반환.
      */
+//    @GetMapping("/api/post/daily")
+//    public List<PostViewResponseDto> findAllpostingByDay(HttpServletRequest request, @RequestParam("day") String targetDay){
+//        Long userId = (Long) request.getAttribute("userId");
+//
+//
+//        return postsService.findPostByDay(userId,targetDay);
+//
+//    }
+
+    /**
+     * 게시물 일단위 조회 => for 캘린더 마킹을 위해
+     * 1. 조회하려는 일을 Parameter로 받는다.
+     * 2. 조회하려는 일 + 사용자 정보 + Following정보를 조합해서 List<Post>로 반환.
+     */
     @GetMapping("/api/post/daily")
-    public List<PostViewResponseDto> findAllpostingByDay(HttpServletRequest request, @RequestParam("day") String targetDay){
+    public List<PostViewResponseDto> findAllpostingByDayPlusFollowing(HttpServletRequest request, @RequestParam("day") String targetDay){
         Long userId = (Long) request.getAttribute("userId");
 
 
-        return postsService.findPostByDay(userId,targetDay);
+        return postsService.findFollowingPostByDay(userId,targetDay);
 
     }
 
