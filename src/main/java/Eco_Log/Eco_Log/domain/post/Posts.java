@@ -50,8 +50,8 @@ public class Posts extends BaseTimeEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> customBehaviorList;
 
-    @OneToMany(mappedBy = "posts")
-    private List<Heart> hearts = new ArrayList<>();
+//    @OneToMany(mappedBy = "posts")
+//    private List<Heart> hearts = new ArrayList<>();
 
 
     //== 연관관계 편의 메서드==//

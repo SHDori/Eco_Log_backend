@@ -31,27 +31,27 @@ public class Heart {
     @Column(name = "heart_id")
     private Long id;
 
-    @Column(name = "from_user")
-    private Long userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "posts_id",nullable = false)
-    @Column(name = "to_post")
-    private Posts posts;
-
-    //== 연관관계 편의 메서드==//
-    public void setPost(Posts posts){
-        this.posts = posts;
-        posts.getHearts().add(this);
-    }
-
-    //== 생성 메서드==//
-    public static Heart createHeart(Posts posts){
-        Heart heart = new Heart();
-        heart.setPost(posts);
-
-        return heart;
-    }
+//    @Column(name = "from_user")
+//    private Long userId;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "posts_id",nullable = false)
+//    @Column(name = "to_post")
+//    private Posts posts;
+//
+//    //== 연관관계 편의 메서드==//
+//    public void setPost(Posts posts){
+//        this.posts = posts;
+//        posts.getHearts().add(this);
+//    }
+//
+//    //== 생성 메서드==//
+//    public static Heart createHeart(Posts posts){
+//        Heart heart = new Heart();
+//        heart.setPost(posts);
+//
+//        return heart;
+//    }
 
 
 
