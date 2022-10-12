@@ -18,11 +18,21 @@ public class PostViewResponseDto {
 
     private String comment;
 
-    public PostViewResponseDto(Long postId, UserSimpleInfoInPostDto userInfo, List<String> customBehaviorList, List<String> behaviorList, String comment) {
+    private int heartCount;
+
+    private boolean isAlreadyHeart;
+
+    public PostViewResponseDto(Long postId, UserSimpleInfoInPostDto userInfo, List<String> customBehaviorList, List<String> behaviorList, String comment,int heartCount) {
         this.postId = postId;
         this.userInfo = userInfo;
         this.customBehaviorList = customBehaviorList;
         this.behaviorList = behaviorList;
         this.comment = comment;
+        this.heartCount = heartCount;
+        this.isAlreadyHeart = false;
+    }
+
+    public void setAlreadyHeart(boolean alreadyHeart) {
+        isAlreadyHeart = alreadyHeart;
     }
 }

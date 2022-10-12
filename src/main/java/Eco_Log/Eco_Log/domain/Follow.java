@@ -17,12 +17,6 @@ import javax.persistence.*;
 @IdClass(Eco_Log.Eco_Log.domain.composite_key.FollowPK.class)
 public class Follow {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "follow_id")
-//    private Long id;
-
-
 
     @Id
     @Column(name ="from_user",insertable = false,updatable = false)

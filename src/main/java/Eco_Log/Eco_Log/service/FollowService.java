@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class FollowService {
 
-    @Autowired
+
     private final UserRepository userRepository;
-    @Autowired
+
     private final FollowRepository followRepository;
 
     /**

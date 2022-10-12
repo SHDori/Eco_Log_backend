@@ -38,6 +38,8 @@ public class Profiles extends BaseTimeEntity {
     @Column(name = "user_role")
     private String userRole;
 
+    private boolean isPublic;
+
     @OneToOne(mappedBy = "profiles",fetch = FetchType.LAZY)
     private Users user;
 
@@ -48,6 +50,7 @@ public class Profiles extends BaseTimeEntity {
         this.email = email;
         this.selfIntroduce = "간단한 자기소개글을 적어주세요!";
         this.userRole = userRole;
+        this.isPublic=true;
 
         /**
          * 랜덤 nick name생성
@@ -60,8 +63,11 @@ public class Profiles extends BaseTimeEntity {
     public Long update(ProfileUpdateRequestDto updateRequestDto){
         this.setNickName(updateRequestDto.getNickName());
         this.setSelfIntroduce(updateRequestDto.getSelfIntroduce());
-
+        this.setPublic(updateRequestDto.isPublic());
         return this.getUser().getId();
     }
 
+    public boolean isPublic() {
+        return isPublic;
+    }
 }

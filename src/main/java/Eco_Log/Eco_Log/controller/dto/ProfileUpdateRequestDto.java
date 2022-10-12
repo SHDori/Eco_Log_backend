@@ -11,9 +11,12 @@ public class ProfileUpdateRequestDto {
 
     private String selfIntroduce;
 
+    private boolean isPublic;
+
     @Builder
-    public ProfileUpdateRequestDto(String nickName, String selfIntroduce) {
+    public ProfileUpdateRequestDto(String nickName, String selfIntroduce,boolean isPublic) {
         this.nickName = nickName;
         this.selfIntroduce = selfIntroduce;
+        this.isPublic = isPublic;
     }
 }

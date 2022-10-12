@@ -6,6 +6,7 @@ import Eco_Log.Eco_Log.controller.dto.postDto.PostListResponseDTO;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostViewResponseDto;
+import Eco_Log.Eco_Log.domain.Heart;
 import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.post.PRconnect;
 import Eco_Log.Eco_Log.domain.post.Posts;
@@ -27,7 +28,8 @@ public class PostsService {
     private final UserRepository userRepository;
     private final BehaviorRepository behaviorRepository;
     private final PRconnectRepository pRconnectRepository;
-    private final BehaviorMappingService behaviorMappingService;
+    private final HeartService heartService;
+    private final HeartRepository heartRepository;
     private final FollowRepository followRepository;
 
 
@@ -118,6 +120,11 @@ public class PostsService {
 
     /**
      * 삭제하기
+     * 1. 넘어온 user와 post가 유효한애들인지 확인
+     * 2. 삭제할 게시물에 관련된 heart정보 모두 삭제
+     * 3. 삭제할 게시물에 관련된 행동연결테이블데이터 모두 삭제
+     * 4. user안의 List에서 삭제할 게시물 삭제
+     * 5. DB에서 게시물 삭제
      */
 
     @Transactional
@@ -131,6 +138,14 @@ public class PostsService {
 
         // 만약 지우려는 게시물의 userId와 요청한 userId가 같다면 삭제
         if (targetPost.getUsers().getId()==userId){
+
+            // heartTable에있는 자신의 heart정보를 다 가져옴
+            List<Heart> targetHearts = heartService.findAllHeartByPostId(targetPost.getId());
+            // 그리고 삭제
+            for(Heart heart: targetHearts){
+                heartRepository.delete(heart);
+            }
+
             // user의 summary에서 post에있는 행동을 다 내린뒤
 
             List<PRconnect> targetPRList = pRconnectRepository.findAllByPostId(targetPost.getId());
@@ -181,7 +196,7 @@ public class PostsService {
         }
 
         UserSimpleInfoInPostDto userInfo = new UserSimpleInfoInPostDto(user.getId(),user.getProfiles().getNickName(),user.getProfiles().getSelfIntroduce());
-        PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment());
+        PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment(),targetPost.getHearts().size());
         postsByDay.add(postData);
         return postsByDay;
     }
@@ -225,7 +240,10 @@ public class PostsService {
                 }
 
                 UserSimpleInfoInPostDto userInfo = new UserSimpleInfoInPostDto(user.getId(),user.getProfiles().getNickName(),user.getProfiles().getSelfIntroduce());
-                PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment());
+                PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment(),targetPost.getHearts().size());
+                // postdata에 내가 이 게시물을 눌렀는지 확인후 set해줘야함
+                boolean heartCheck = heartService.isHeartPushCheck(userId,targetPost.getId());
+                postData.setAlreadyHeart(heartCheck);
                 postsByDay.add(postData);
             }
 

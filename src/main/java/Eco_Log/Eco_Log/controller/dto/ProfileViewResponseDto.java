@@ -10,9 +10,11 @@ public class ProfileViewResponseDto {
 
 
     private Long userId;
-    private String userNicname;
+    private String userNickname;
     private Long userPostTotalCount;
+    private String selfIntroduce;
     private List<SummaryInfoDTO> userSummary;
+    private boolean isPublic;
     private boolean isMyProfile;
     private boolean isAlreadyFollow;
 
@@ -26,11 +28,13 @@ public class ProfileViewResponseDto {
         isAlreadyFollow = alreadyFollow;
     }
 
-    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary) {
+    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary,String selfIntroduce,boolean isPublic) {
         this.userId = userId;
-        this.userNicname = userNicname;
+        this.userNickname = userNicname;
         this.userPostTotalCount = userPostTotalCount;
         this.userSummary = userSummary;
+        this.selfIntroduce = selfIntroduce;
+        this.isPublic = isPublic;
         this.isMyProfile = false;
         this.isAlreadyFollow= false;
     }
