@@ -4,6 +4,7 @@ package Eco_Log.Eco_Log.domain.post;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
 import Eco_Log.Eco_Log.domain.BaseTimeEntity;
+import Eco_Log.Eco_Log.domain.Heart;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.tool.StringListConverter;
 import lombok.Getter;
@@ -44,8 +45,14 @@ public class Posts extends BaseTimeEntity {
     @OneToMany(mappedBy = "posts")
     private List<PRconnect> pRconnects = new ArrayList<>();
 
+
+
     @Convert(converter = StringListConverter.class)
     private List<String> customBehaviorList;
+
+    @OneToMany(mappedBy = "posts")
+    private List<Heart> hearts = new ArrayList<>();
+
 
     //== 연관관계 편의 메서드==//
     public void setUsers(Users users){

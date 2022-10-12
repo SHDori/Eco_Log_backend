@@ -70,11 +70,12 @@ public class UserController {
     }
 
 
+    // 프로필 조회
     @GetMapping("/user/profile")
-    public ProfileViewResponseDto getUserProfile(HttpServletRequest request){
+    public ProfileViewResponseDto getUserProfile(HttpServletRequest request,@RequestParam("targetId")Long targetUserId){
         Long userId = (Long) request.getAttribute("userId");
 
-        return userService.getUserProfileInfo(userId);
+        return userService.getUserProfileInfo(userId,targetUserId);
     }
 
 

@@ -27,6 +27,8 @@ public class PRconnect {
     @JoinColumn(name = "behaviors_id",nullable = false)
     private Behaviors behaviors;
 
+
+
     //== 연관관계 편의 메서드==//
     public void setPost(Posts posts){
         this.posts = posts;

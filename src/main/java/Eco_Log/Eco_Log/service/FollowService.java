@@ -52,4 +52,14 @@ public class FollowService {
 
     }
 
+
+    public boolean isFallowCheck(Long fromUserId,Long toUserId){
+        Follow followInfo = followRepository.findSpecificFollowInfoNoOptional(fromUserId,toUserId);
+
+        if (followInfo==null){
+            return false;
+        }else{
+            return true;
+        }
+    }
 }

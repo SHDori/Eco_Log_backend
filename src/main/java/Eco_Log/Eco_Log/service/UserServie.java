@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.service;
 
 
 import Eco_Log.Eco_Log.controller.dto.*;
+import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Profiles;
 import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -38,12 +39,14 @@ import static Eco_Log.Eco_Log.config.SecurityConfig.FRONT_URL;
 @PropertySource("classpath:oauthInfo.properties")
 public class UserServie {
 
-    @Autowired
+
     private final UserRepository userRepository;
-    @Autowired
+
     private final PRconnectRepository pRconnectRepository;
-    @Autowired
+
     private final JwtService jwtService;
+
+    private final FollowService followService;
 
     @Value("${kakaoClientId}")
     private String kakaoClientId;
@@ -206,15 +209,32 @@ public class UserServie {
 
     }
 
-    public ProfileViewResponseDto getUserProfileInfo(Long userId){
+    /**
+     * 유저 프로필 조회
+     * => 내가 해당 유저를 팔로우하는지 찾아서 넣어야한다.
+     * @param targetUserId
+     * @return
+     */
+    public ProfileViewResponseDto getUserProfileInfo(Long requestUserId,Long targetUserId){
 
-        Users targetUser = userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ userId));
+        Users targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ targetUserId));
 
-        List<SummaryInfoDTO> targetUserSummary = findSummaryByUserId(userId);
-
+        List<SummaryInfoDTO> targetUserSummary = findSummaryByUserId(targetUserId);
+        // 유저의정보를넣었다.
+        ProfileViewResponseDto resultProfileDto = new ProfileViewResponseDto(targetUserId,targetUser.getProfiles().getNickName(), (long) targetUser.getPosts().size(),targetUserSummary);
         // total Count는 추후 수정
-        return new ProfileViewResponseDto(userId,targetUser.getProfiles().getNickName(), (long) targetUser.getPosts().size(),targetUserSummary);
+
+        // 만약 내 프로필이라면
+        if(requestUserId == targetUserId) {
+            resultProfileDto.setMyProfile(true);
+        }else {
+            //내 프로필이 아니라면 targetuser가 내가 follower한사람인지 체크
+            boolean isFollow = followService.isFallowCheck(requestUserId,targetUserId);
+            resultProfileDto.setAlreadyFollow(isFollow);
+        }
+        //
+        return  resultProfileDto;
 
     }
 }
