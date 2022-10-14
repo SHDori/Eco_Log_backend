@@ -98,7 +98,7 @@ public class UserServie {
         return jwtService.createToken(user);
 
     }
-
+    @Transactional(readOnly = true)
     public CurrentUserDto getCurrentUser(HttpServletRequest request){
         System.out.println(request);
         Long userId = (Long) request.getAttribute("userId");
@@ -203,6 +203,7 @@ public class UserServie {
     /**
      * summary 조회
      */
+    @Transactional(readOnly = true)
     public List<SummaryInfoDTO> findSummaryByUserId(Long userId){
 
         return pRconnectRepository.summaryFindByUserID(userId);
@@ -215,6 +216,7 @@ public class UserServie {
      * @param targetUserId
      * @return
      */
+    @Transactional(readOnly = true)
     public ProfileViewResponseDto getUserProfileInfo(Long requestUserId,Long targetUserId){
 
         Users targetUser = userRepository.findById(targetUserId)

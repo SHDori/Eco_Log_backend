@@ -46,7 +46,8 @@ public class PostsServiceTest {
     PRconnectRepository pRconnectRepository;
     @Autowired
     FollowService followService;
-
+    @Autowired
+    HeartService heartService;
     @Before
     public void makeBehaviors(){
         Behaviors behaviors = new Behaviors("친환경 상점 이용");
@@ -254,6 +255,38 @@ public class PostsServiceTest {
     }
 
 
+    @Test
+    public void 특정일짜_following_게시글조회시_하트여부검사() {
+
+        // given
+        Users users1 = createCustomUser(0L, "김승환");
+        Users users2 = createCustomUser(1L, "김강민");
+        Users users3 = createCustomUser(2L, "최지훈");
+        //1 의 following => 2,3  // 2의 following => 없음// 3의 following => 2
+        followService.makeFollowRelation(users1.getId(), users2.getId());
+        followService.makeFollowRelation(users1.getId(), users3.getId());
+        followService.makeFollowRelation(users3.getId(), users2.getId());
+        String doingDay = "2022-8-18";
+        // user 1꺼
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto(doingDay);
+        // user 2꺼
+        PostSaveRequestDto saveRequestDto_2 = getSaveRequestDto_1(doingDay);
+        // user 3꺼
+        PostSaveRequestDto saveRequestDto_3 = getSaveRequestDto_1(doingDay);
+
+        //Long user1PostId= postsService.save(users1.getId(), saveRequestDto_1);
+        Long user2PostId=postsService.save(users2.getId(), saveRequestDto_2);
+        //Long user3PostId=postsService.save(users3.getId(), saveRequestDto_3);
+
+        // when
+        heartService.makeHeartInfo(users3.getId(),user2PostId);
+
+        //then
+        List<PostViewResponseDto> user3_followingPostByDay =
+                postsService.findFollowingPostByDay(users3.getId(), doingDay);
+        Assert.assertEquals("User3이 하트누른 user2의 게시물에는 하트가 이미눌려있어야한다.",true, user3_followingPostByDay.get(0).isAlreadyHeart());
+
+    }
 
 
 

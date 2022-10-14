@@ -8,11 +8,13 @@ import Eco_Log.Eco_Log.repository.PostsRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class HeartService {
 
     private final UserRepository userRepository;
@@ -71,7 +73,7 @@ public class HeartService {
             return true;
         }
     }
-
+    @Transactional(readOnly = true)
     public List<Heart> findAllHeartByPostId(Long postId){
         return heartRepository.findAllByPostsId(postId);
     }

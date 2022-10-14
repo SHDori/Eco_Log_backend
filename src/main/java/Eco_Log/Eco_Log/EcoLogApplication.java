@@ -12,4 +12,5 @@ public class EcoLogApplication {
 		SpringApplication.run(EcoLogApplication.class, args);
 	}
 
+
 }

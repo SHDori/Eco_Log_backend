@@ -7,8 +7,11 @@ import Eco_Log.Eco_Log.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class FollowService {
 
 
@@ -52,7 +55,7 @@ public class FollowService {
 
     }
 
-
+    @Transactional(readOnly = true)
     public boolean isFallowCheck(Long fromUserId,Long toUserId){
         Follow followInfo = followRepository.findSpecificFollowInfoNoOptional(fromUserId,toUserId);
 

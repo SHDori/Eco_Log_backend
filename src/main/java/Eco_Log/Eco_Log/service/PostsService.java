@@ -164,6 +164,7 @@ public class PostsService {
      * 월 단위 게시물 조회하기
      *
      */
+    @Transactional(readOnly = true)
     public List<PostListResponseDTO> findPostByMonth(Long userId, String month){
         return postsRepository.findByMonth(userId, month).stream()
                 .map(PostListResponseDTO::new)
@@ -178,6 +179,7 @@ public class PostsService {
      *      3. 행동ID를 기반으로 다 돌면서 List에 이름으로 넣음
      * 4. 반환
      */
+    @Transactional(readOnly = true)
     public List<PostViewResponseDto> findPostByDay(Long userId, String day){
         List<PostViewResponseDto> postsByDay = new ArrayList<>();
 
@@ -211,6 +213,7 @@ public class PostsService {
      *      3. 행동ID를 기반으로 다 돌면서 List에 이름으로 넣음
      * 4. 반환
      */
+    @Transactional(readOnly = true)
     public List<PostViewResponseDto> findFollowingPostByDay(Long userId, String day){
         List<PostViewResponseDto> postsByDay = new ArrayList<>();
 
@@ -226,10 +229,13 @@ public class PostsService {
 
         for(Long targetUserId : targetUserList){
             Posts targetPost = postsRepository.findByDay(targetUserId,day);
+
             if(targetPost == null){
                 continue;
             }
             else{
+                Users targetUser = userRepository.findById(targetUserId)
+                        .orElseThrow(()-> new IllegalArgumentException("해당 유저가 없습니다. id = "+userId));
                 // 그날에 대상user의 글이있다면
                 List<PRconnect> prList = pRconnectRepository.findAllByPostId(targetPost.getId());
                 List<String> behaviorList = new ArrayList<>();
@@ -239,7 +245,7 @@ public class PostsService {
                     behaviorList.add(behaviors.getName());
                 }
 
-                UserSimpleInfoInPostDto userInfo = new UserSimpleInfoInPostDto(user.getId(),user.getProfiles().getNickName(),user.getProfiles().getSelfIntroduce());
+                UserSimpleInfoInPostDto userInfo = new UserSimpleInfoInPostDto(targetUser.getId(),targetUser.getProfiles().getNickName(),targetUser.getProfiles().getSelfIntroduce());
                 PostViewResponseDto postData = new PostViewResponseDto(targetPost.getId(),userInfo,targetPost.getCustomBehaviorList(),behaviorList, targetPost.getComment(),targetPost.getHearts().size());
                 // postdata에 내가 이 게시물을 눌렀는지 확인후 set해줘야함
                 boolean heartCheck = heartService.isHeartPushCheck(userId,targetPost.getId());

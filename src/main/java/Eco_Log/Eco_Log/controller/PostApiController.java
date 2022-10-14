@@ -30,7 +30,7 @@ public class PostApiController {
     @PostMapping("/api/post")
     public Long save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
         Long userId = (Long) request.getAttribute("userId");
-        //일단 하드코딩
+
 
         return postsService.save(userId,saveDto);
     }
