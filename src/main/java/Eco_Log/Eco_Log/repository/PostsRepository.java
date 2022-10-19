@@ -19,4 +19,5 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
 
     @Query("SELECT p FROM Posts p WHERE p.doingDay LIKE %:day% AND p.users.id = :uid")
     Posts findByDay(@Param("uid") Long uid, @Param("day") String day);
+
 }

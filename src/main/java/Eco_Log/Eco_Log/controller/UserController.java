@@ -47,6 +47,7 @@ public class UserController {
         jwtResult.put(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + jwtToken);
 
 //        return ResponseEntity.ok().headers(headers).body("success");
+
         return ResponseEntity.ok().body(jwtResult);
     }
 
@@ -62,20 +63,34 @@ public class UserController {
         return ResponseEntity.ok().body(currentUserDto);
     }
 
-    @GetMapping("/user/summary")
-    public List<SummaryInfoDTO> getUserSummary(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
+//    @GetMapping("/user/summary")
+//    public List<SummaryInfoDTO> getUserSummary(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//
+//        return userService.findSummaryByUserId(userId);
+//    }
 
-        return userService.findSummaryByUserId(userId);
+    @GetMapping("/user/summary")
+    public ResponseEntity<List<SummaryInfoDTO>> getUserSummary(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        List<SummaryInfoDTO> responseData = userService.findSummaryByUserId(userId);
+        return ResponseEntity.ok().body(responseData);
     }
 
 
     // 프로필 조회
-    @GetMapping("/user/profile")
-    public ProfileViewResponseDto getUserProfile(HttpServletRequest request,@RequestParam("targetId")Long targetUserId){
-        Long userId = (Long) request.getAttribute("userId");
+//    @GetMapping("/user/profile")
+//    public ProfileViewResponseDto getUserProfile(HttpServletRequest request,@RequestParam("targetId")Long targetUserId){
+//        Long userId = (Long) request.getAttribute("userId");
+//
+//        return userService.getUserProfileInfo(userId,targetUserId);
+//    }
 
-        return userService.getUserProfileInfo(userId,targetUserId);
+    @GetMapping("/user/profile")
+    public ResponseEntity<ProfileViewResponseDto> getUserProfile(HttpServletRequest request,@RequestParam("targetId")Long targetUserId){
+        Long userId = (Long) request.getAttribute("userId");
+        ProfileViewResponseDto responseDto = userService.getUserProfileInfo(userId,targetUserId);
+        return ResponseEntity.ok().body(responseDto);
     }
 
 

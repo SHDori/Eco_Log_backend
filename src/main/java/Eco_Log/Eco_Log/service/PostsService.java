@@ -13,6 +13,7 @@ import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class PostsService {
      * @return
      */
     @Transactional
-    public Long save(Long userId, PostSaveRequestDto saveRequestDto){
+    public ResponseEntity save(Long userId, PostSaveRequestDto saveRequestDto){
 
 
 //        Long userId = Long.parseLong(saveRequestDto.getUserId());
@@ -49,28 +50,31 @@ public class PostsService {
 
         // 1. Post저장하고
 //        Long result = postsRepository.save(saveRequestDto.toEntity()).getId();
-        Posts posts = Posts.createPost(users,saveRequestDto);
-        postsRepository.save(posts);
-        for(String behaviorId:saveRequestDto.getBehaviorList()){
-            Long bId = Long.parseLong(behaviorId);
-            Behaviors behaviors = behaviorRepository.findById(bId)
-                    .orElseThrow(()-> new IllegalArgumentException("해당 행동이 없습니다. id = "+bId));
-            // 2. post안의 활동내역을 User활동내역에 반영한다.
-            PRconnect pRconnect = PRconnect.createPRconnect(posts,behaviors);
+        // 만약 해당일에 이미 있다면 400에러
+        Posts postCheck = postsRepository.findByDay(userId,saveRequestDto.getDoingDay());
 
-            pRconnectRepository.save(pRconnect);
+        if(postCheck == null) {
+
+            Posts posts = Posts.createPost(users, saveRequestDto);
+            postsRepository.save(posts);
+            for (String behaviorId : saveRequestDto.getBehaviorList()) {
+                Long bId = Long.parseLong(behaviorId);
+                Behaviors behaviors = behaviorRepository.findById(bId)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 행동이 없습니다. id = " + bId));
+                // 2. post안의 활동내역을 User활동내역에 반영한다.
+                PRconnect pRconnect = PRconnect.createPRconnect(posts, behaviors);
+
+                pRconnectRepository.save(pRconnect);
+            }
+
+
+            // 3. 뱃지획득 결과를 반환한다
+
+
+            return ResponseEntity.ok().body(posts.getId());
+        }else{
+            return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
         }
-
-
-
-
-
-
-
-        // 3. 뱃지획득 결과를 반환한다
-
-
-        return posts.getId();
     }
 
     /**

@@ -3,6 +3,7 @@ package Eco_Log.Eco_Log.controller;
 import Eco_Log.Eco_Log.controller.dto.postDto.*;
 import Eco_Log.Eco_Log.service.PostsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +28,16 @@ public class PostApiController {
      * 4. 게시물 저장.
      * 5. 뱃지 조건에 맞는지 체크.
      */
+//    @PostMapping("/api/post")
+//    public Long save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
+//        Long userId = (Long) request.getAttribute("userId");
+//
+//
+//        return postsService.save(userId,saveDto);
+//    }
+
     @PostMapping("/api/post")
-    public Long save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
+    public ResponseEntity save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
         Long userId = (Long) request.getAttribute("userId");
 
 
