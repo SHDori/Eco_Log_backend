@@ -95,11 +95,11 @@ public class UserController {
 
 
     @PostMapping("/user/profile")
-    public Long profileUpdate(HttpServletRequest request, @RequestBody ProfileUpdateRequestDto updateRequestDto){
+    public ResponseEntity profileUpdate(HttpServletRequest request, @RequestBody ProfileUpdateRequestDto updateRequestDto){
         Long userId = (Long) request.getAttribute("userId");
+        Long targetUserId = profileService.update(userId,updateRequestDto);
 
-
-        return profileService.update(userId,updateRequestDto);
+        return ResponseEntity.ok().body(targetUserId);
     }
 
 

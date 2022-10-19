@@ -5,6 +5,7 @@ import Eco_Log.Eco_Log.controller.dto.HeartRequestDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
 import Eco_Log.Eco_Log.service.HeartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,16 +18,17 @@ public class HeartController {
     private final HeartService heartService;
 
     @PostMapping("/post/heart")
-    public String pushPostHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
+    public ResponseEntity<String> pushPostHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
         Long userId = (Long) request.getAttribute("userId");
-
-        return heartService.makeHeartInfo(userId,requestDto.getTargetPostId());
+        String returnMsg = heartService.makeHeartInfo(userId,requestDto.getTargetPostId());
+        return ResponseEntity.ok().body(returnMsg);
     }
 
     @DeleteMapping("/post/heart")
-    public String cancelHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
+    public ResponseEntity<String> cancelHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
         Long userId = (Long) request.getAttribute("userId");
-        return heartService.cancelHeart(userId, requestDto.getTargetPostId());
+        String returnMsg =heartService.cancelHeart(userId, requestDto.getTargetPostId());
+        return ResponseEntity.ok().body(returnMsg);
     }
 
 }

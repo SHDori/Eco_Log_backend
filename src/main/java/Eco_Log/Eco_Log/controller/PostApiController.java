@@ -57,11 +57,11 @@ public class PostApiController {
      * 7. 뱃지 조건에 맞는지 체크.
      */
     @PutMapping("/api/post/change")
-    public Long postUpdate(HttpServletRequest request, @RequestBody PostUpdateRequestDto updateRequestDto){
+    public ResponseEntity postUpdate(HttpServletRequest request, @RequestBody PostUpdateRequestDto updateRequestDto){
         Long userId = (Long) request.getAttribute("userId");
         //일단 하드코딩
-
-        return postsService.update(userId,updateRequestDto);
+        Long targetPostId = postsService.update(userId,updateRequestDto);
+        return ResponseEntity.ok().body(targetPostId+"번 게시물이 변경 되었습니다");
     }
 
 
@@ -74,11 +74,12 @@ public class PostApiController {
      * 4. 게시물 삭제.
      */
     @DeleteMapping("/api/post")
-    public Long postDelete(HttpServletRequest request, @RequestBody PostDeleteRequestDto deleteRequestDto){
+    public ResponseEntity postDelete(HttpServletRequest request, @RequestBody PostDeleteRequestDto deleteRequestDto){
         Long userId = (Long) request.getAttribute("userId");
         //일단 하드코딩
         Long targetPostId = deleteRequestDto.getPostId();
-        return postsService.delete(userId,targetPostId);
+        Long resultId = postsService.delete(userId,targetPostId);
+        return ResponseEntity.ok().body(resultId+"번 게시물이 삭제 되었습니다");
     }
 
     /**
@@ -87,7 +88,7 @@ public class PostApiController {
      * 2. 조회하려는 월 + 사용자 정보 + Following정보를 조합해서 List<String>로 반환.
      */
     @GetMapping("/api/post/Monthly")
-    public List<String> findMonthlyPostingDayForMarking(HttpServletRequest request,@RequestParam("month") String targetMonth){
+    public ResponseEntity<List<String>> findMonthlyPostingDayForMarking(HttpServletRequest request,@RequestParam("month") String targetMonth){
         Long userId = (Long) request.getAttribute("userId");
         List<PostListResponseDTO> targetMonthPostingData =postsService.findPostByMonth(userId,targetMonth);
         List<String> postingDayList = new ArrayList<>();
@@ -96,7 +97,7 @@ public class PostApiController {
             postingDayList.add(data.getDoingDay());
         }
 
-        return postingDayList;
+        return ResponseEntity.ok().body(postingDayList);
 
     }
 
@@ -120,11 +121,11 @@ public class PostApiController {
      * 2. 조회하려는 일 + 사용자 정보 + Following정보를 조합해서 List<Post>로 반환.
      */
     @GetMapping("/api/post/daily")
-    public List<PostViewResponseDto> findAllpostingByDayPlusFollowing(HttpServletRequest request, @RequestParam("day") String targetDay){
+    public ResponseEntity<List<PostViewResponseDto>> findAllpostingByDayPlusFollowing(HttpServletRequest request, @RequestParam("day") String targetDay){
         Long userId = (Long) request.getAttribute("userId");
+        List<PostViewResponseDto> responseData = postsService.findFollowingPostByDay(userId,targetDay);
 
-
-        return postsService.findFollowingPostByDay(userId,targetDay);
+        return ResponseEntity.ok().body(responseData);
 
     }
 
