@@ -13,6 +13,9 @@ public class ProfileUpdateRequestDto {
 
     private boolean isPublic;
 
+    public ProfileUpdateRequestDto() {
+    }
+
     @Builder
     public ProfileUpdateRequestDto(String nickName, String selfIntroduce,boolean isPublic) {
         this.nickName = nickName;
