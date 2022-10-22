@@ -1,12 +1,14 @@
 package Eco_Log.Eco_Log.controller.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@JsonAutoDetect
 public class ProfileUpdateRequestDto {
 
     private String nickName;
