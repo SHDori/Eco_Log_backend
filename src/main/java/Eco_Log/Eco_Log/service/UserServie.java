@@ -46,6 +46,8 @@ public class UserServie {
 
     private final JwtService jwtService;
 
+    private final PostsService postsService;
+
     private final FollowService followService;
 
     @Value("${kakaoClientId}")
@@ -235,6 +237,7 @@ public class UserServie {
             boolean isFollow = followService.isFallowCheck(requestUserId,targetUserId);
             resultProfileDto.setAlreadyFollow(isFollow);
         }
+        resultProfileDto.setRecentlyCustomBehaviorList(postsService.getCustomBehaviorList());
         //
         return  resultProfileDto;
 

@@ -20,7 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CorsFilter corsFilter;
+    //private final CorsFilter corsFilter;
 
     //public static final String FRONT_URL = "http://localhost:8080/api/oauth/kakaotoken";
     public static final String FRONT_URL = "http://localhost:3000/oauth";
@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
-                .addFilter(corsFilter)
+//                .addFilter(corsFilter)
 
                 // UsernamePasswordAuthenticationFilter 직전에 JWT RequestFilter를 실행하기위해 addFilterBefor로 추가해준다.
                 .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)

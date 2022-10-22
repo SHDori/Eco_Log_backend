@@ -1,6 +1,7 @@
 package Eco_Log.Eco_Log.controller;
 
 import Eco_Log.Eco_Log.controller.dto.postDto.*;
+import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.service.PostsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -128,11 +129,5 @@ public class PostApiController {
         return ResponseEntity.ok().body(responseData);
 
     }
-
-
-
-
-
-
 
 }

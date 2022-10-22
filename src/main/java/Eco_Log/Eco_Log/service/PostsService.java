@@ -33,6 +33,11 @@ public class PostsService {
     private final HeartRepository heartRepository;
     private final FollowRepository followRepository;
 
+    private List<String> customBehaviorList = new ArrayList<>();
+
+    public List<String> getCustomBehaviorList() {
+        return customBehaviorList;
+    }
 
     /**
      * 게시물 저장하기
@@ -65,6 +70,23 @@ public class PostsService {
                 PRconnect pRconnect = PRconnect.createPRconnect(posts, behaviors);
 
                 pRconnectRepository.save(pRconnect);
+            }
+
+            if(saveRequestDto.getCustomizedBehaviors().size()>0){
+                int count = 0;
+                for(String customBehavior : saveRequestDto.getCustomizedBehaviors()){
+                    if(customBehaviorList.size()<3){
+                        customBehaviorList.add(customBehavior);
+                    }else{
+                        customBehaviorList.remove(0);
+                        customBehaviorList.add(customBehavior);
+                    }
+                    if(count <3){
+                        count++;
+                    }else{
+                        break;
+                    }
+                }
             }
 
 
@@ -262,6 +284,11 @@ public class PostsService {
 
 
     }
+
+
+
+
+
 
 
 

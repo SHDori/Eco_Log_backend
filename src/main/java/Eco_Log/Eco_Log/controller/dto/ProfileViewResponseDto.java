@@ -14,6 +14,7 @@ public class ProfileViewResponseDto {
     private Long userPostTotalCount;
     private String selfIntroduce;
     private List<SummaryInfoDTO> userSummary;
+    private List<String> recentlyCustomBehaviorList;
     private boolean isPublic;
     private boolean isMyProfile;
     private boolean isAlreadyFollow;
@@ -28,7 +29,11 @@ public class ProfileViewResponseDto {
         isAlreadyFollow = alreadyFollow;
     }
 
-    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary,String selfIntroduce,boolean isPublic) {
+    public void setRecentlyCustomBehaviorList(List<String> recentlyCustomBehaviorList) {
+        this.recentlyCustomBehaviorList = recentlyCustomBehaviorList;
+    }
+
+    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary, String selfIntroduce, boolean isPublic) {
         this.userId = userId;
         this.userNickname = userNicname;
         this.userPostTotalCount = userPostTotalCount;
