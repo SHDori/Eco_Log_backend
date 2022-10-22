@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public class CurrentUserDto {
