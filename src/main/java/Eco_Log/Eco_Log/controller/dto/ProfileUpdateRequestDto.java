@@ -3,8 +3,10 @@ package Eco_Log.Eco_Log.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ProfileUpdateRequestDto {
 
     private String nickName;
@@ -13,8 +15,7 @@ public class ProfileUpdateRequestDto {
 
     private boolean isPublic;
 
-    public ProfileUpdateRequestDto() {
-    }
+
 
     @Builder
     public ProfileUpdateRequestDto(String nickName, String selfIntroduce,boolean isPublic) {
