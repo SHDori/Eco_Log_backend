@@ -63,7 +63,13 @@ public class Profiles extends BaseTimeEntity {
     public Long update(ProfileUpdateRequestDto updateRequestDto){
         this.setNickName(updateRequestDto.getNickName());
         this.setSelfIntroduce(updateRequestDto.getSelfIntroduce());
-        this.setPublic(updateRequestDto.isPublic());
+        if(updateRequestDto.getPublic()==1){
+            this.setPublic(true);
+        }else{
+            this.setPublic(false);
+        }
+
+        System.out.println("요청 boolean값 => "+updateRequestDto.getPublic());
         return this.getUser().getId();
     }
 

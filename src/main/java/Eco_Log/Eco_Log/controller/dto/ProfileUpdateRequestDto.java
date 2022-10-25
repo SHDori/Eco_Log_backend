@@ -17,12 +17,15 @@ public class ProfileUpdateRequestDto {
 
     private String selfIntroduce;
 
-    private boolean isPublic;
+    private int isPublic;
 
 
+    public int getPublic(){
+        return this.isPublic;
+    }
 
     @Builder
-    public ProfileUpdateRequestDto(String nickName, String selfIntroduce,boolean isPublic) {
+    public ProfileUpdateRequestDto(String nickName, String selfIntroduce,int isPublic) {
         this.nickName = nickName;
         this.selfIntroduce = selfIntroduce;
         this.isPublic = isPublic;

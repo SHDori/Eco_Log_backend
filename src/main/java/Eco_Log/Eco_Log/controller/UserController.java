@@ -97,6 +97,7 @@ public class UserController {
     @PostMapping("/user/profile")
     public ResponseEntity profileUpdate(HttpServletRequest request, @RequestBody ProfileUpdateRequestDto updateRequestDto){
         Long userId = (Long) request.getAttribute("userId");
+        System.out.println("controller에 요청된 boolean값 => " + updateRequestDto.getPublic());
         Long targetUserId = profileService.update(userId,updateRequestDto);
 
         return ResponseEntity.ok().body(targetUserId);
