@@ -47,7 +47,7 @@ public class ProfileServiceTest {
         String changedSelfIntroduction="지구를 지키는 우리가 진정한 지구방위대!";
 
         ProfileUpdateRequestDto updateRequestDto =
-                new ProfileUpdateRequestDto(changedNickName,changedSelfIntroduction,false);
+                new ProfileUpdateRequestDto(changedNickName,changedSelfIntroduction,0);
 
         // when
 

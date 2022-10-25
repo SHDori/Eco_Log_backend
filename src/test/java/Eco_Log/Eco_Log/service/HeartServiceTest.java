@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +61,9 @@ public class HeartServiceTest {
         Behaviors behaviors2 = new Behaviors("기부와 나눔");
         behaviorRepository.save(behaviors2);
 
+        Behaviors behaviors3 = new Behaviors("텀블러 사용");
+        behaviorRepository.save(behaviors3);
+
     }
 
     @After
@@ -78,8 +83,11 @@ public class HeartServiceTest {
 
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        Long postId = postsService.save(user1.getId(),saveRequestDto);
-
+        Long postId= postsService.save(user1.getId(),saveRequestDto);
+        //Long postId=0l;
+//        if(responseEntity.getStatusCode()== HttpStatus.OK){
+//            postId = (long)responseEntity.getBody();
+//        }
 
         // when
         heartService.makeHeartInfo(user1.getId(),postId);
@@ -167,11 +175,13 @@ public class HeartServiceTest {
         behaviorsList.add("1");
         behaviorsList.add("2");
         behaviorsList.add("3");
+        List<String> customBehaviorsList = new ArrayList<>();
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()
                 .doingDay(doingDay)
                 .behaviorList(behaviorsList)
                 .comment(comment)
+                .customizedBehaviors(customBehaviorsList)
                 .build();
         return saveRequestDto;
     }

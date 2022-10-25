@@ -45,7 +45,7 @@ public class PostsService {
      * @return
      */
     @Transactional
-    public ResponseEntity save(Long userId, PostSaveRequestDto saveRequestDto){
+    public Long save(Long userId, PostSaveRequestDto saveRequestDto){
 
 
 //        Long userId = Long.parseLong(saveRequestDto.getUserId());
@@ -93,9 +93,11 @@ public class PostsService {
             // 3. 뱃지획득 결과를 반환한다
 
 
-            return ResponseEntity.ok().body(posts.getId());
+            //return ResponseEntity.ok().body(posts.getId());
+            return posts.getId();
         }else{
-            return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
+            //return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
+            return -1l;
         }
     }
 

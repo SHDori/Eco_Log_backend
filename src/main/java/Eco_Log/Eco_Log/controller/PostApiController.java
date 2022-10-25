@@ -40,9 +40,14 @@ public class PostApiController {
     @PostMapping("/api/post")
     public ResponseEntity save(HttpServletRequest request, @RequestBody PostSaveRequestDto saveDto){
         Long userId = (Long) request.getAttribute("userId");
+        Long resultCode = postsService.save(userId,saveDto);
 
-
-        return postsService.save(userId,saveDto);
+        if(resultCode==-1l){
+            return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
+        }else{
+            return ResponseEntity.ok().body(resultCode);
+        }
+        //return postsService.save(userId,saveDto);
     }
 
     /**

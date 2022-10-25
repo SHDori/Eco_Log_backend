@@ -160,16 +160,17 @@ public class PostsServiceTest {
         //given
         Users users = createUser();
         String doingDay = "2022-8-18";
+        String doingDay1 = "2022-8-19";
 
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay);
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay1);
         // when
         Long postsId = postsService.save(users.getId(),saveRequestDto);
         Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1);
 
-
+        System.out.println("user의 삭제전 게시물 갯수=>"+users.getPosts().size());
         postsService.delete(users.getId(),postsId);
-
+        System.out.println("user의 게시물 갯수=>"+users.getPosts().size());
         // then
         Users getUsers = userRepository.findById(users.getId())
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시물이 없습니다. id = "+ users.getId()));
@@ -308,11 +309,13 @@ public class PostsServiceTest {
         behaviorsList.add("1");
         behaviorsList.add("2");
         behaviorsList.add("3");
+        List<String> customBehaviorsList = new ArrayList<>();
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()
                 .doingDay(doingDay)
                 .behaviorList(behaviorsList)
                 .comment(comment)
+                .customizedBehaviors(customBehaviorsList)
                 .build();
         return saveRequestDto;
     }
@@ -324,12 +327,12 @@ public class PostsServiceTest {
         List<String> behaviorsList = new ArrayList<>();
 
         behaviorsList.add("2");
-
+        List<String> customBehaviorsList = new ArrayList<>();
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()
                 .behaviorList(behaviorsList)
                 .doingDay(doingDay)
-
+                .customizedBehaviors(customBehaviorsList)
                 .comment(comment)
                 .build();
         return saveRequestDto;
