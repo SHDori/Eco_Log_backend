@@ -1,5 +1,6 @@
 package Eco_Log.Eco_Log.service;
 
+import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.controller.dto.ProfileDto;
 import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -97,6 +98,37 @@ public class FollowServiceTest {
         List<Follow> user1FollowingList = followRepository.findMyFollowingByUserId(users1.getId());
         System.out.println(user1FollowingList);
         Assert.assertEquals("User1의 Follwing은 1명이어야한다",1, user1FollowingList.size());
+
+
+    }
+
+    @Test
+    public void 팔로워_팔로잉_조회(){
+        // given
+        Users users1 = createUser(0L,"김승환");
+        System.out.println("user1의 id=>"+users1.getId());
+        Users users2 = createUser(1L,"김강민");
+        System.out.println("user2의 id=>"+users2.getId());
+        Users users3 = createUser(2L,"최지훈");
+        System.out.println("user3의 id=>"+users3.getId());
+
+
+
+        // when
+        // user3의 follower 1
+        //user1의 following 2,3
+        followService.makeFollowRelation(users1.getId(),users2.getId());
+        followService.makeFollowRelation(users1.getId(),users3.getId());
+        followService.makeFollowRelation(users3.getId(),users2.getId());
+        List<FollowViewResponseDto> followingList = followService.getMyFollowing(users1.getId());
+        List<FollowViewResponseDto> followerList = followService.getMyFollower(users3.getId());
+        //then
+
+        Assert.assertEquals("User1의 Follwing은 2명이어야한다",2, followingList.size());
+        Assert.assertEquals("User3의 Follwer는 1명이어야한다",1, followerList.size());
+
+
+
 
 
     }

@@ -14,11 +14,17 @@ import java.util.Optional;
 public interface FollowRepository extends JpaRepository<Follow, FollowPK> {
 
     // 내가 From 이면 to들은 내가 follow요청한 사람들들
+    // 내 팔로잉 조회(follow정보 모두)
     @Query("select f FROM Follow f where f.fromUser = :userId")
     List<Follow> findMyFollowingByUserId(@Param("userId")Long userId);
 
+    // 내 팔로잉 id만 조회
     @Query("select f.toUser FROM Follow f where f.fromUser = :userId")
     List<Long> findMyFollowingUserIdByFromUserId(@Param("userId")Long userId);
+
+    // 내 팔로워 id만 조회
+    @Query("select f.fromUser FROM Follow f where f.toUser = :userId")
+    List<Long> findMyFollowerUserIdByToUserId(@Param("userId")Long userId);
 
     @Query("select f FROM Follow f where f.fromUser = :fromUserId and f.toUser = :toUserId")
     Optional<Follow> findSpecificFollowInfo(@Param("fromUserId")Long fromUserId, @Param("toUserId")Long toUserId);
