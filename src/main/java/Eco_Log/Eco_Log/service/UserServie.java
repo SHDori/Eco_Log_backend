@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static Eco_Log.Eco_Log.config.SecurityConfig.FRONT_URL;
@@ -241,5 +242,34 @@ public class UserServie {
         //
         return  resultProfileDto;
 
+    }
+
+    /**
+     * 유저 검색
+     * => 유저 검색을 email이나 닉네임으로 하고
+     *    유저의 닉네임, 자기소개, 팔로우여부, 자주 기록한 실천을 반환
+     */
+    @Transactional(readOnly = true)
+    public List<UserSearchResponseDto> getSearchUserList(Long requestUserId,String word){
+        List<UserSearchResponseDto> searchResultUserList = new ArrayList<>();
+        //1. 넘겨온 값으로 모든 유저를 검색한다.
+        List<Users> serchedUserList = userRepository.findUsersBySearchWord(word);
+        //2. 유저리스트를 돈다
+
+        for(Users targetUser : serchedUserList){
+            Long targetUserId = targetUser.getId();
+            //3. 돌며 각각의 유저 summary를 넣어준다.
+            List<SummaryInfoDTO> targetUserSummary = findSummaryByUserId(targetUserId);
+            UserSearchResponseDto searchResponseDto = new UserSearchResponseDto(targetUser.getId(), targetUser.getProfiles().getNickName(),targetUser.getProfiles().getSelfIntroduce(),targetUserSummary);
+            //4. 각각의 유저가 팔로우이미 한사람인지 체크한다.
+            boolean isFollow = followService.isFallowCheck(requestUserId,targetUserId);
+            searchResponseDto.setAlreadyFollow(isFollow);
+            searchResultUserList.add(searchResponseDto);
+        }
+
+
+        //5. 반환한다
+
+        return searchResultUserList;
     }
 }

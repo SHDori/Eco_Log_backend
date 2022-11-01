@@ -104,6 +104,19 @@ public class UserController {
     }
 
 
+    @GetMapping("/user/search")
+    public ResponseEntity searchingUser(HttpServletRequest request,@RequestParam("keyword")String keyword){
+
+        Long userId = (Long) request.getAttribute("userId");
+
+        List<UserSearchResponseDto> searchResult = userService.getSearchUserList(userId,keyword);
+
+        return ResponseEntity.ok().body(searchResult);
+
+
+    }
+
+
 
 
 
