@@ -38,6 +38,9 @@ public class Profiles extends BaseTimeEntity {
     @Column(name = "user_role")
     private String userRole;
 
+    private int behaviorCount;
+
+
     private boolean isPublic;
 
     @OneToOne(mappedBy = "profiles",fetch = FetchType.LAZY)
@@ -50,6 +53,7 @@ public class Profiles extends BaseTimeEntity {
         this.email = email;
         this.selfIntroduce = "간단한 자기소개글을 적어주세요!";
         this.userRole = userRole;
+        this.behaviorCount =0;
         this.isPublic=true;
 
         /**
@@ -71,6 +75,13 @@ public class Profiles extends BaseTimeEntity {
 
         System.out.println("요청 boolean값 => "+updateRequestDto.getPublic());
         return this.getUser().getId();
+    }
+
+    public void plusBehaviorCount(int n){
+        this.behaviorCount+=n;
+    }
+    public void minusBehaviorCount(int n){
+        this.behaviorCount-=n;
     }
 
     public boolean isPublic() {

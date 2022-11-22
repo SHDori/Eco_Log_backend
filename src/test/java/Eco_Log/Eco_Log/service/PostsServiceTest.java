@@ -67,7 +67,19 @@ public class PostsServiceTest {
 
     }
 
+    @Test
+    public void 행동갯수_상승여부(){
+        Users users = createUser();
+        String doingDay = "2022-8-18";
 
+        PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+
+        //when
+        Long postsId = postsService.save(users.getId(),saveRequestDto);
+
+        //then
+        Assert.assertEquals("행동count 가 5 이어야한다",5,users.getProfiles().getBehaviorCount());
+    }
 
     @Test
     public void 게시글_저장(){
@@ -78,7 +90,7 @@ public class PostsServiceTest {
         String doingDay = "2022-8-18";
 
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay);
+        PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1("2022-8-19");
         PostSaveRequestDto saveRequestDto_2 = getSaveRequestDto_1(doingDay);
         // when
         Long postsId = postsService.save(users.getId(),saveRequestDto);
@@ -111,6 +123,7 @@ public class PostsServiceTest {
         Assert.assertEquals("게시글에 유저정보가 잘 들어가있어야한다.",getPosts.getUsers().getId(), getUsers.getId());
 
         Assert.assertEquals("User의 Summary정보의 길이는 3이어야한다.", 3, userSummaryInfoList.size());
+        Assert.assertEquals("행동count 가 6 이어야한다",6,users.getProfiles().getBehaviorCount());
     }
 
 
@@ -124,6 +137,7 @@ public class PostsServiceTest {
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
         Long targetPostId = postsService.save(users.getId(),saveRequestDto);
+
         List<SummaryInfoDTO> userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
         System.out.println("user summary정보=>");
         System.out.println(userSummaryInfoList);
@@ -133,10 +147,13 @@ public class PostsServiceTest {
         List<String> changedBehaviorsList = new ArrayList<>();
         changedBehaviorsList.add("2");
         changedBehaviorsList.add("3");
+        List<String> changeCustomBehaviorList = new ArrayList<>();
+        changeCustomBehaviorList.add("나무심기");
         PostUpdateRequestDto updateRequestDto = PostUpdateRequestDto.builder()
                 .postId(targetPostId)
                 .comment(chagedComment)
                 .behaviorList(changedBehaviorsList)
+                .customizedBehaviors(changeCustomBehaviorList)
                 .build();
         // when
         postsService.update(users.getId(), updateRequestDto);
@@ -152,7 +169,7 @@ public class PostsServiceTest {
 
         Assert.assertEquals("User의 Summary정보의 길이는 2이어야한다.", 2, userSummaryInfoList.size());
         Assert.assertEquals("Comment가 잘 바뀌어 있어야한다.", chagedComment, getPosts.getComment());
-
+        Assert.assertEquals("행동count 가 3 이어야한다",3,users.getProfiles().getBehaviorCount());
     }
 
     @Test
@@ -183,6 +200,7 @@ public class PostsServiceTest {
 
         Assert.assertEquals("User의 Post수가 잘 줄어들어야한다",1,users.getPosts().size());
         Assert.assertEquals("Summary가 잘 줄어들어야한다",1,userSummaryInfoList.size());
+        Assert.assertEquals("행동count 가 1 이어야한다",1,users.getProfiles().getBehaviorCount());
     }
 
 
@@ -310,6 +328,8 @@ public class PostsServiceTest {
         behaviorsList.add("2");
         behaviorsList.add("3");
         List<String> customBehaviorsList = new ArrayList<>();
+        customBehaviorsList.add("스뎅 빨대사용");
+        customBehaviorsList.add("업사이클링");
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()
                 .doingDay(doingDay)
@@ -327,6 +347,7 @@ public class PostsServiceTest {
         List<String> behaviorsList = new ArrayList<>();
 
         behaviorsList.add("2");
+
         List<String> customBehaviorsList = new ArrayList<>();
         PostSaveRequestDto saveRequestDto = PostSaveRequestDto
                 .builder()

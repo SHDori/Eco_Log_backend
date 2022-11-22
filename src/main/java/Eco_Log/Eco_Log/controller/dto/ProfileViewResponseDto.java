@@ -17,6 +17,7 @@ public class ProfileViewResponseDto {
     private List<SummaryInfoDTO> userSummary;
     private List<String> recentlyCustomBehaviorList;
     private String createAt;
+    private int behaviorCount;
 
     private boolean isPublic;
     private boolean isMyProfile;
@@ -36,7 +37,7 @@ public class ProfileViewResponseDto {
         this.recentlyCustomBehaviorList = recentlyCustomBehaviorList;
     }
 
-    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary, String selfIntroduce, boolean isPublic, LocalDateTime createAt) {
+    public ProfileViewResponseDto(Long userId, String userNicname, Long userPostTotalCount, List<SummaryInfoDTO> userSummary, String selfIntroduce, boolean isPublic, LocalDateTime createAt,int behaviorCount) {
         this.userId = userId;
         this.userNickname = userNicname;
         this.userPostTotalCount = userPostTotalCount;
@@ -46,5 +47,6 @@ public class ProfileViewResponseDto {
         this.createAt = String.valueOf(createAt).substring(0,10);
         this.isMyProfile = false;
         this.isAlreadyFollow= false;
+        this.behaviorCount = behaviorCount;
     }
 }

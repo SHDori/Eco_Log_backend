@@ -55,6 +55,7 @@ public class PostsService {
 
         // 1. Post저장하고
 //        Long result = postsRepository.save(saveRequestDto.toEntity()).getId();
+
         // 만약 해당일에 이미 있다면 400에러
         Posts postCheck = postsRepository.findByDay(userId,saveRequestDto.getDoingDay());
 
@@ -71,6 +72,12 @@ public class PostsService {
 
                 pRconnectRepository.save(pRconnect);
             }
+
+            // 해당유저의 Behavior갯수 더해줌
+            users.getProfiles().plusBehaviorCount(saveRequestDto.getBehaviorList().size());
+            // 해당유저의 customBehavior갯수 더해줌
+            users.getProfiles().plusBehaviorCount(saveRequestDto.getCustomizedBehaviors().size());
+
 
             if(saveRequestDto.getCustomizedBehaviors().size()>0){
                 int count = 0;
@@ -121,7 +128,12 @@ public class PostsService {
             // 기존의 PRList를 다 지우고
             for( PRconnect target : targetPRList){
                 pRconnectRepository.delete(target);
+                // Behavior의 갯수를 빼준다.
+                user.getProfiles().minusBehaviorCount(1);
             }
+
+            // 해당 타겟의 custom행동을 빼준다.
+            user.getProfiles().minusBehaviorCount(targetPost.getCustomBehaviorList().size());
 
             for(String behaviorId:updateRequestDto.getBehaviorList()){
                 Long bId = Long.parseLong(behaviorId);
@@ -137,6 +149,9 @@ public class PostsService {
 
         // 4. 게시물 update
         Long result = targetPost.update(updateRequestDto);
+
+        user.getProfiles().plusBehaviorCount(updateRequestDto.getBehaviorList().size());
+        user.getProfiles().plusBehaviorCount(updateRequestDto.getCustomizedBehaviors().size());
         //behaviorMappingService.behaviorCountPlus(user,updateRequestDto.getDoingList());
 
         // 5. 뱃지획득 결과를 반환한다
@@ -179,7 +194,10 @@ public class PostsService {
             List<PRconnect> targetPRList = pRconnectRepository.findAllByPostId(targetPost.getId());
             for( PRconnect target : targetPRList){
                 pRconnectRepository.delete(target);
+                targetUser.getProfiles().minusBehaviorCount(1);
             }
+            // user의 custom 행동 카운트를 내린다.
+            targetUser.getProfiles().minusBehaviorCount(targetPost.getCustomBehaviorList().size());
             targetUser.deletePost(targetPost);
             // 지운다
             postsRepository.delete(targetPost);
