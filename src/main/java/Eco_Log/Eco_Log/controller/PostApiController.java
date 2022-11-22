@@ -1,5 +1,7 @@
 package Eco_Log.Eco_Log.controller;
 
+//import Eco_Log.Eco_Log.controller.dto.MessageDto;
+import Eco_Log.Eco_Log.controller.dto.MessageDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.*;
 import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.service.PostsService;
@@ -43,7 +45,8 @@ public class PostApiController {
         Long resultCode = postsService.save(userId,saveDto);
 
         if(resultCode==-1l){
-            return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
+            return ResponseEntity.badRequest().body(new MessageDto("해당 날짜에 이미 게시물이 있습니다."));
+            //return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
         }else{
             return ResponseEntity.ok().body(resultCode);
         }
