@@ -39,6 +39,7 @@ public class Profiles extends BaseTimeEntity {
     private String userRole;
 
     private int behaviorCount;
+    private int customBehaviorCount;
 
 
     private boolean isPublic;
@@ -82,6 +83,13 @@ public class Profiles extends BaseTimeEntity {
     }
     public void minusBehaviorCount(int n){
         this.behaviorCount-=n;
+    }
+
+    public void plusCustomBehaviorCount(int n){
+        this.customBehaviorCount+=n;
+    }
+    public void minusCustomBehaviorCount(int n){
+        this.customBehaviorCount-=n;
     }
 
     public boolean isPublic() {

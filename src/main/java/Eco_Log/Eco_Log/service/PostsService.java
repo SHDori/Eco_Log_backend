@@ -2,10 +2,7 @@ package Eco_Log.Eco_Log.service;
 
 
 import Eco_Log.Eco_Log.controller.dto.*;
-import Eco_Log.Eco_Log.controller.dto.postDto.PostListResponseDTO;
-import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
-import Eco_Log.Eco_Log.controller.dto.postDto.PostUpdateRequestDto;
-import Eco_Log.Eco_Log.controller.dto.postDto.PostViewResponseDto;
+import Eco_Log.Eco_Log.controller.dto.postDto.*;
 import Eco_Log.Eco_Log.domain.Heart;
 import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.post.PRconnect;
@@ -45,7 +42,7 @@ public class PostsService {
      * @return
      */
     @Transactional
-    public Long save(Long userId, PostSaveRequestDto saveRequestDto){
+    public PostSaveResponseDto save(Long userId, PostSaveRequestDto saveRequestDto){
 
 
 //        Long userId = Long.parseLong(saveRequestDto.getUserId());
@@ -76,7 +73,7 @@ public class PostsService {
             // 해당유저의 Behavior갯수 더해줌
             users.getProfiles().plusBehaviorCount(saveRequestDto.getBehaviorList().size());
             // 해당유저의 customBehavior갯수 더해줌
-            users.getProfiles().plusBehaviorCount(saveRequestDto.getCustomizedBehaviors().size());
+            users.getProfiles().plusCustomBehaviorCount(saveRequestDto.getCustomizedBehaviors().size());
 
 
             if(saveRequestDto.getCustomizedBehaviors().size()>0){
@@ -96,15 +93,92 @@ public class PostsService {
                 }
             }
 
+            /**
+             * 3. 뱃지획득 결과를 반환한다
+             *  3-1. 연속3일 체크
+             *  3-2. 연속 30일
+             *
+             *  3-3. 누적기록 15개
+             *  3-4. 누적기록 40개
+             *  3-5. 누적기록 70개
+             *
+             *  3-6. custom 기록발행 누적 5개 이상
+             *  3-7. 5일쉬다가 기록발행한경우
+             */
 
-            // 3. 뱃지획득 결과를 반환한다
+            List<Integer> badgeNotifyList = new ArrayList<>();
+
+            String badgeState = users.getBadgeState();
+            List<Character> badgeStateList = new ArrayList<>();
+
+            for(int i=0;i<badgeState.length();i++){
+                badgeStateList.add(badgeState.charAt(i));
+            }
+            /**
+             * 연속 뱃지 관련여부 체크
+             */
+
+
+            /**
+             * 3-3,4,5
+             * 누적기록 관련 벳지 체크
+             */
+            int numOfPost= users.getPosts().size();
+            // 15개를 발행했다면,
+            if(badgeStateList.get(2)=='1'){
+
+                if(badgeStateList.get(3)=='1') {
+                    if(badgeStateList.get(4)=='0') {
+                        if(numOfPost>=70){
+                            //
+                            badgeNotifyList.add(4);
+                            StringBuilder badgeList = new StringBuilder(badgeState);
+                            badgeList.setCharAt(4, '1');
+                            users.setBadgeState(badgeList.toString());
+                        }
+                    }
+
+
+
+                }else if(badgeStateList.get(3)=='0') {
+                    if(numOfPost>=40){
+                        badgeNotifyList.add(3);
+                        StringBuilder badgeList = new StringBuilder(badgeState);
+                        badgeList.setCharAt(3, '1');
+                        users.setBadgeState(badgeList.toString());
+                    }
+                }
+            }else if(badgeStateList.get(2)=='0'){
+                if(numOfPost>=15){
+                    badgeNotifyList.add(2);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(2, '1');
+                    users.setBadgeState(badgeList.toString());
+                }
+            }
+
+            /**
+             * 3-6 custom 기록발행 누적 5개 이상
+             */
+            if(badgeStateList.get(5)=='0'){
+                if(users.getProfiles().getCustomBehaviorCount()>=5){
+                    badgeNotifyList.add(5);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(5, '1');
+                    users.setBadgeState(badgeList.toString());
+                }
+            }
+
+            // 기타 기록 관련 벳지 체크
+
+
 
 
             //return ResponseEntity.ok().body(posts.getId());
-            return posts.getId();
+            return new PostSaveResponseDto(posts.getId(),badgeNotifyList);
         }else{
             //return ResponseEntity.badRequest().body("해당 날짜에 이미 게시물이 있습니다.");
-            return -1l;
+            return new PostSaveResponseDto(-1l,new ArrayList<>());
         }
     }
 
@@ -133,7 +207,7 @@ public class PostsService {
             }
 
             // 해당 타겟의 custom행동을 빼준다.
-            user.getProfiles().minusBehaviorCount(targetPost.getCustomBehaviorList().size());
+            user.getProfiles().minusCustomBehaviorCount(targetPost.getCustomBehaviorList().size());
 
             for(String behaviorId:updateRequestDto.getBehaviorList()){
                 Long bId = Long.parseLong(behaviorId);
@@ -151,7 +225,7 @@ public class PostsService {
         Long result = targetPost.update(updateRequestDto);
 
         user.getProfiles().plusBehaviorCount(updateRequestDto.getBehaviorList().size());
-        user.getProfiles().plusBehaviorCount(updateRequestDto.getCustomizedBehaviors().size());
+        user.getProfiles().plusCustomBehaviorCount(updateRequestDto.getCustomizedBehaviors().size());
         //behaviorMappingService.behaviorCountPlus(user,updateRequestDto.getDoingList());
 
         // 5. 뱃지획득 결과를 반환한다
@@ -197,7 +271,7 @@ public class PostsService {
                 targetUser.getProfiles().minusBehaviorCount(1);
             }
             // user의 custom 행동 카운트를 내린다.
-            targetUser.getProfiles().minusBehaviorCount(targetPost.getCustomBehaviorList().size());
+            targetUser.getProfiles().minusCustomBehaviorCount(targetPost.getCustomBehaviorList().size());
             targetUser.deletePost(targetPost);
             // 지운다
             postsRepository.delete(targetPost);

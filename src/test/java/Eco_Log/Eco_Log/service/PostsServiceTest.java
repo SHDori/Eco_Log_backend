@@ -75,10 +75,12 @@ public class PostsServiceTest {
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
 
         //when
-        Long postsId = postsService.save(users.getId(),saveRequestDto);
+        Long postsId = postsService.save(users.getId(),saveRequestDto).getPostId();
 
         //then
-        Assert.assertEquals("행동count 가 5 이어야한다",5,users.getProfiles().getBehaviorCount());
+        Assert.assertEquals("행동count 가 5 이어야한다",5,users.getProfiles().getBehaviorCount()+users.getProfiles().getCustomBehaviorCount());
+        Assert.assertEquals("행동count 가 5 이어야한다",3,users.getProfiles().getBehaviorCount());
+        Assert.assertEquals("행동count 가 5 이어야한다",2,users.getProfiles().getCustomBehaviorCount());
     }
 
     @Test
@@ -93,10 +95,10 @@ public class PostsServiceTest {
         PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1("2022-8-19");
         PostSaveRequestDto saveRequestDto_2 = getSaveRequestDto_1(doingDay);
         // when
-        Long postsId = postsService.save(users.getId(),saveRequestDto);
-        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1);
+        Long postsId = postsService.save(users.getId(),saveRequestDto).getPostId();
+        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1).getPostId();
 
-        Long postsId_2 = postsService.save(users1.getId(),saveRequestDto_2);
+        Long postsId_2 = postsService.save(users1.getId(),saveRequestDto_2).getPostId();
 
 
         // then
@@ -136,7 +138,7 @@ public class PostsServiceTest {
 
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        Long targetPostId = postsService.save(users.getId(),saveRequestDto);
+        Long targetPostId = postsService.save(users.getId(),saveRequestDto).getPostId();
 
         List<SummaryInfoDTO> userSummaryInfoList = pRconnectRepository.summaryFindByUserID(users.getId());
         System.out.println("user summary정보=>");
@@ -182,8 +184,8 @@ public class PostsServiceTest {
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
         PostSaveRequestDto saveRequestDto_1 = getSaveRequestDto_1(doingDay1);
         // when
-        Long postsId = postsService.save(users.getId(),saveRequestDto);
-        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1);
+        Long postsId = postsService.save(users.getId(),saveRequestDto).getPostId();
+        Long postsId_1 = postsService.save(users.getId(),saveRequestDto_1).getPostId();
 
         System.out.println("user의 삭제전 게시물 갯수=>"+users.getPosts().size());
         postsService.delete(users.getId(),postsId);
@@ -294,7 +296,7 @@ public class PostsServiceTest {
         PostSaveRequestDto saveRequestDto_3 = getSaveRequestDto_1(doingDay);
 
         //Long user1PostId= postsService.save(users1.getId(), saveRequestDto_1);
-        Long user2PostId=postsService.save(users2.getId(), saveRequestDto_2);
+        Long user2PostId=postsService.save(users2.getId(), saveRequestDto_2).getPostId();
         //Long user3PostId=postsService.save(users3.getId(), saveRequestDto_3);
 
         // when
@@ -305,6 +307,60 @@ public class PostsServiceTest {
                 postsService.findFollowingPostByDay(users3.getId(), doingDay);
         Assert.assertEquals("User3이 하트누른 user2의 게시물에는 하트가 이미눌려있어야한다.",true, user3_followingPostByDay.get(0).isAlreadyHeart());
 
+    }
+
+
+
+    @Test
+    public void 게시물15개뱃지_획득_Test() {
+
+        //given
+        Users users = createUser();
+        userRepository.save(users);
+
+        for (int i = 1; i <= 15; i++) {
+            String doingDay = "2022-8-" + i;
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(), saveRequestDto);
+        }
+        for (int i = 1; i <= 5; i++) {
+            String doingDay = "2022-7-" + i;
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(), saveRequestDto);
+        }
+
+        // when
+
+
+        //then
+        System.out.println("벳지상태는 => "+ users.getBadgeState());
+        Assert.assertEquals("뱃지가 획득되어있어야한다","0010010000", users.getBadgeState());
+    }
+
+
+    @Test
+    public void 게시물40개뱃지_획득_Test() {
+
+        //given
+        Users users = createUser();
+        userRepository.save(users);
+
+        for (int i = 1; i <= 20; i++) {
+            String doingDay = "2022-8-" + i;
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(), saveRequestDto);
+        }
+        for (int i = 1; i <= 20; i++) {
+            String doingDay = "2022-7-" + i;
+            PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
+            postsService.save(users.getId(), saveRequestDto);
+        }
+
+        // when
+
+        //then
+        System.out.println("벳지상태는 => "+ users.getBadgeState());
+        Assert.assertEquals("뱃지가 획득되어있어야한다","0011010000", users.getBadgeState());
     }
 
 

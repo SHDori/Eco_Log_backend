@@ -102,7 +102,7 @@ public class UserServieTest {
         // 1이 2를 검색시 이미 팔로우가 되어있어야함
         followService.makeFollowRelation(users1.getId(),users2.getId());
         PostSaveRequestDto saveRequestDto = getSaveRequestDto("2022-08-22");
-        Long postsId = postsService.save(users2.getId(),saveRequestDto);
+        Long postsId = postsService.save(users2.getId(),saveRequestDto).getPostId();
         // when
 
         List<UserSearchResponseDto> searchResult = userServie.getSearchUserList(users1.getId(),"1515");
@@ -128,7 +128,7 @@ public class UserServieTest {
         // 1이 2를 검색시 이미 팔로우가 되어있어야함
         followService.makeFollowRelation(users1.getId(),users2.getId());
         PostSaveRequestDto saveRequestDto = getSaveRequestDto("2022-08-22");
-        Long postsId = postsService.save(users2.getId(),saveRequestDto);
+        Long postsId = postsService.save(users2.getId(),saveRequestDto).getPostId();
 
         String changedNickName = "지구방위대원";
         String changedSelfIntroduction="지구를 지키는 우리가 진정한 지구방위대!";

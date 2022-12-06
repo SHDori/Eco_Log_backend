@@ -38,6 +38,8 @@ public class Users extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     private Summary summary;
 
+    private String badgeState;
+
 //    //////////// Follow 관련
 ////     내가 follow하는 사람들 => 내가 fromUser인경우
 //    @OneToMany(mappedBy = "users")
@@ -84,6 +86,7 @@ public class Users extends BaseTimeEntity {
     public static Users createUser(String name,Profiles profiles,Summary summary){
         Users user = new Users();
         user.setName(name);
+        user.setBadgeState("0000000000");
         ////////////////////////
         // 일단 임시로 이렇게
         System.out.println("---------------------------------------");

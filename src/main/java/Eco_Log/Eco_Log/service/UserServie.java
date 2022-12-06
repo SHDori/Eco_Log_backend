@@ -227,7 +227,7 @@ public class UserServie {
 
         List<SummaryInfoDTO> targetUserSummary = findSummaryByUserId(targetUserId);
         // 유저의정보를넣었다.
-        ProfileViewResponseDto resultProfileDto = new ProfileViewResponseDto(targetUserId,targetUser.getProfiles().getNickName(), (long) targetUser.getPosts().size(),targetUserSummary,targetUser.getProfiles().getSelfIntroduce(),targetUser.getProfiles().isPublic(),targetUser.getCreatedDate(),targetUser.getProfiles().getBehaviorCount());
+        ProfileViewResponseDto resultProfileDto = new ProfileViewResponseDto(targetUserId,targetUser.getProfiles().getNickName(), (long) targetUser.getPosts().size(),targetUserSummary,targetUser.getProfiles().getSelfIntroduce(),targetUser.getProfiles().isPublic(),targetUser.getCreatedDate(),targetUser.getProfiles().getBehaviorCount(),targetUser.getProfiles().getCustomBehaviorCount());
         // total Count는 추후 수정
 
         // 만약 내 프로필이라면

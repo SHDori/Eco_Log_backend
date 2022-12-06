@@ -83,7 +83,7 @@ public class HeartServiceTest {
 
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        Long postId= postsService.save(user1.getId(),saveRequestDto);
+        Long postId= postsService.save(user1.getId(),saveRequestDto).getPostId();
         //Long postId=0l;
 //        if(responseEntity.getStatusCode()== HttpStatus.OK){
 //            postId = (long)responseEntity.getBody();
@@ -115,7 +115,7 @@ public class HeartServiceTest {
 
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        Long postId = postsService.save(user1.getId(),saveRequestDto);
+        Long postId = postsService.save(user1.getId(),saveRequestDto).getPostId();
         heartService.makeHeartInfo(user1.getId(),postId);
         heartService.makeHeartInfo(user2.getId(),postId);
 
@@ -146,7 +146,7 @@ public class HeartServiceTest {
 
         String doingDay = "2022-8-18";
         PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay);
-        Long postId = postsService.save(user1.getId(),saveRequestDto);
+        Long postId = postsService.save(user1.getId(),saveRequestDto).getPostId();
         heartService.makeHeartInfo(user1.getId(),postId);
         heartService.makeHeartInfo(user2.getId(),postId);
         List<Heart> pre_heartList = heartService.findAllHeartByPostId(postId);
