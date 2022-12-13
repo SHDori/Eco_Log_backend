@@ -1,5 +1,6 @@
 package Eco_Log.Eco_Log.service;
 
+import Eco_Log.Eco_Log.controller.dto.FollowMakeResponseDto;
 import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -26,7 +27,7 @@ public class FollowService {
     /**
      * 팔로우 하기
      */
-    public String makeFollowRelation(Long fromUserId,Long toUserId){
+    public FollowMakeResponseDto makeFollowRelation(Long fromUserId,Long toUserId){
 
         Users fromUser = userRepository.findById(fromUserId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ fromUserId));
@@ -35,7 +36,25 @@ public class FollowService {
 
         Follow follow = followRepository.save(new Follow(fromUserId,toUserId));
 
-        return follow.toString();
+        String badgeState = fromUser.getBadgeState();
+        List<Character> badgeStateList = new ArrayList<>();
+
+        List<Integer> badgeNotifyList = new ArrayList<>();
+
+        for(int i=0;i<badgeState.length();i++){
+            badgeStateList.add(badgeState.charAt(i));
+        }
+
+        if(badgeStateList.get(7)=='0'){
+            badgeNotifyList.add(7);
+            StringBuilder badgeList = new StringBuilder(badgeState);
+            badgeList.setCharAt(7, '1');
+            fromUser.setBadgeState(badgeList.toString());
+        }
+
+
+        //return follow.toString();
+        return new FollowMakeResponseDto(follow.toString(),badgeNotifyList);
     }
 
 

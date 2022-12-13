@@ -214,6 +214,27 @@ public class UserServie {
     }
 
     /**
+     * User Badge조회
+     */
+    @Transactional(readOnly = true)
+    public UserBadgeResponseDto getUserBadgeState(Long userId){
+
+        Users targetUser = userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ userId));
+
+        String badgeState = targetUser.getBadgeState();
+        List<Character> badgeStateList = new ArrayList<>();
+
+        for(int i=0;i<badgeState.length();i++){
+            badgeStateList.add(badgeState.charAt(i));
+        }
+
+        return new UserBadgeResponseDto(userId,badgeStateList);
+
+    }
+
+
+    /**
      * 유저 프로필 조회
      * => 내가 해당 유저를 팔로우하는지 찾아서 넣어야한다.
      * @param targetUserId

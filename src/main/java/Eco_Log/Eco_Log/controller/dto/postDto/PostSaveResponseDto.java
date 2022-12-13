@@ -10,10 +10,10 @@ import java.util.List;
 public class PostSaveResponseDto {
 
     private Long postId;
-    private List<Integer> badgeAcheiveList;
+    private List<Integer> badgeAchieveList;
 
-    public PostSaveResponseDto(Long postId, List<Integer> badgeAcheiveList) {
+    public PostSaveResponseDto(Long postId, List<Integer> badgeAchieveList) {
         this.postId = postId;
-        this.badgeAcheiveList = badgeAcheiveList;
+        this.badgeAchieveList = badgeAchieveList;
     }
 }

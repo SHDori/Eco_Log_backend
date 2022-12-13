@@ -116,6 +116,16 @@ public class UserController {
 
     }
 
+    @GetMapping("/user/badge")
+    public ResponseEntity getUserBadgeState(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        UserBadgeResponseDto badgeStateDto = userService.getUserBadgeState(userId);
+
+
+        return ResponseEntity.ok().body(badgeStateDto);
+
+    }
+
 
 
 

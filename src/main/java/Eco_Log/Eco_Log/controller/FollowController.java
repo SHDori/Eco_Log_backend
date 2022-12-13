@@ -1,6 +1,7 @@
 package Eco_Log.Eco_Log.controller;
 
 
+import Eco_Log.Eco_Log.controller.dto.FollowMakeResponseDto;
 import Eco_Log.Eco_Log.controller.dto.FollowRequestDto;
 import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.controller.dto.ProfileUpdateRequestDto;
@@ -22,9 +23,9 @@ public class FollowController {
     @PostMapping("/user/follow")
     public ResponseEntity plusFollower(HttpServletRequest request, @RequestBody FollowRequestDto followRequestDto){
         Long userId = (Long) request.getAttribute("userId");
-        String resultMsg = followService.makeFollowRelation(userId,followRequestDto.getTargetId());
+        FollowMakeResponseDto resultDto = followService.makeFollowRelation(userId,followRequestDto.getTargetId());
 
-        return ResponseEntity.ok().body(resultMsg);
+        return ResponseEntity.ok().body(resultDto);
     }
     /**
      * 팔로잉 취소
