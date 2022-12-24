@@ -18,4 +18,11 @@ public interface HeartRepository extends JpaRepository<Heart,Long> {
 
     @Query("SELECT h FROM Heart h WHERE h.posts.id = :targetPostId")
     List<Heart> findAllByPostsId(@Param("targetPostId")Long targetPostId);
+
+    // 하트를누른 유저는 나지만 대상게시물 id는 내거가 아닐떄
+    @Query("SELECT h FROM Heart h WHERE h.userId = :uid AND NOT h.posts.users.id IN :uid")
+    List<Heart> findOtherPostHeartList(@Param("uid") Long uid);
+
+    @Query("SELECT h FROM Heart h WHERE h.userId = :uid AND NOT h.posts.users.id <> :uid")
+    List<Heart> findOtherPostHeartListTest(@Param("uid") Long uid);
 }

@@ -161,6 +161,41 @@ public class HeartServiceTest {
 
     }
 
+    @Test
+    public void 하트관련뱃지_획득(){
+        // given
+        Users user1 = createCustomUser(0L,"슬라임");
+        Users user2 = createCustomUser(1L, "핑크빈");
+
+        String doingDay = "2022-8-";
+
+
+
+        for(int i=0;i<3;i++){
+            for(int j=0;j<10;j++){
+                PostSaveRequestDto saveRequestDto = getSaveRequestDto(doingDay+String.valueOf(i)+String.valueOf(j));
+                Long postId=postsService.save(user2.getId(),saveRequestDto).getPostId();
+
+                heartService.makeHeartInfo(user1.getId(),postId);
+            }
+        }
+
+
+        // when
+
+
+        //then
+        String badgeState = user1.getBadgeState();
+        List<Character> badgeStateList = new ArrayList<>();
+
+        for(int i=0;i<badgeState.length();i++){
+            badgeStateList.add(badgeState.charAt(i));
+        }
+        System.out.println("뱃지 상태는 =>"+badgeStateList);
+
+        Assert.assertEquals("뱃지가 획득되어있어야한다", java.util.Optional.of('1'), java.util.Optional.ofNullable(badgeStateList.get(8)));
+    }
+
 
 
 
@@ -202,5 +237,7 @@ public class HeartServiceTest {
         Users savedUser = userServie.save(name,profileDto);
         return savedUser;
     }
+
+
 
 }

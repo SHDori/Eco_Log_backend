@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,10 +19,10 @@ public class HeartController {
     private final HeartService heartService;
 
     @PostMapping("/post/heart")
-    public ResponseEntity<String> pushPostHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
+    public ResponseEntity<List> pushPostHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
         Long userId = (Long) request.getAttribute("userId");
-        String returnMsg = heartService.makeHeartInfo(userId,requestDto.getTargetPostId());
-        return ResponseEntity.ok().body(returnMsg);
+        List<Integer> badgeNotifyList = heartService.makeHeartInfo(userId,requestDto.getTargetPostId());
+        return ResponseEntity.ok().body(badgeNotifyList);
     }
 
     @DeleteMapping("/post/heart")

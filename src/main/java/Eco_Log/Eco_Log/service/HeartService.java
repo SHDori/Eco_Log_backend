@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class HeartService {
     /**
      * 하트 누르기
      */
-    public String makeHeartInfo(Long fromUserId,Long toPostId){
+    public List<Integer> makeHeartInfo(Long fromUserId,Long toPostId){
 
         Users fromUser = userRepository.findById(fromUserId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ fromUserId));
@@ -35,7 +36,34 @@ public class HeartService {
         Heart heart = Heart.createHeart(targetPost,fromUserId);
         heartRepository.save(heart);
 
-        return heart.toString();
+        List<Integer> badgeNotifyList = new ArrayList<>();
+
+        String badgeState = fromUser.getBadgeState();
+        List<Character> badgeStateList = new ArrayList<>();
+
+        for(int i=0;i<badgeState.length();i++){
+            badgeStateList.add(badgeState.charAt(i));
+        }
+
+        if(badgeStateList.get(8)=='0'){
+            // 123456
+            if(heartRepository.findOtherPostHeartList(fromUserId).size()>=3){
+                badgeNotifyList.add(8);
+                StringBuilder badgeList = new StringBuilder(badgeState);
+                badgeList.setCharAt(8, '1');
+                fromUser.setBadgeState(badgeList.toString());
+            }
+        }else if(badgeStateList.get(9)=='0'){
+            if(heartRepository.findOtherPostHeartList(fromUserId).size()>=30){
+                badgeNotifyList.add(9);
+                StringBuilder badgeList = new StringBuilder(badgeState);
+                badgeList.setCharAt(9, '1');
+                fromUser.setBadgeState(badgeList.toString());
+            }
+        }
+
+        return badgeNotifyList;
+        //return heart.toString();
     }
 
 

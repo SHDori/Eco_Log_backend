@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class Users extends BaseTimeEntity {
 //
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL )
     private Summary summary;
+
+    private String recentRecordDate;
+    private int continuousRecord;
 
     private String badgeState;
 
@@ -87,6 +91,8 @@ public class Users extends BaseTimeEntity {
         Users user = new Users();
         user.setName(name);
         user.setBadgeState("0000000000");
+        user.setRecentRecordDate(String.valueOf(LocalDate.now()).substring(0,10));
+        user.setContinuousRecord(0);
         ////////////////////////
         // 일단 임시로 이렇게
         System.out.println("---------------------------------------");

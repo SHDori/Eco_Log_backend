@@ -59,6 +59,7 @@ public class PostsService {
         if(postCheck == null) {
 
             Posts posts = Posts.createPost(users, saveRequestDto);
+            // 여기서 게시물 저장
             postsRepository.save(posts);
             for (String behaviorId : saveRequestDto.getBehaviorList()) {
                 Long bId = Long.parseLong(behaviorId);
@@ -114,9 +115,51 @@ public class PostsService {
             for(int i=0;i<badgeState.length();i++){
                 badgeStateList.add(badgeState.charAt(i));
             }
+            int recentRecordYear = Integer.parseInt(String.valueOf(users.getRecentRecordDate()).substring(0,4),10);
+            int recentRecordMonth = Integer.parseInt(String.valueOf(users.getRecentRecordDate()).substring(5,7),10);
+            int recentRecordDay = Integer.parseInt(String.valueOf(users.getRecentRecordDate()).substring(8,10),10);
+            int recentRecordTotalDate =calculateTotalDay(recentRecordYear,recentRecordMonth,recentRecordDay);
+
+
+            int thisRecordYear = Integer.parseInt(String.valueOf(posts.getCreatedDate()).substring(0,4),10);
+            int thisRecordMonth = Integer.parseInt(String.valueOf(posts.getCreatedDate()).substring(5,7),10);
+            int thisRecordDay = Integer.parseInt(String.valueOf(posts.getCreatedDate()).substring(8,10),10);
+
+            int thisRecordTotalDate =calculateTotalDay(thisRecordYear,thisRecordMonth,thisRecordDay);
+            if((thisRecordTotalDate-recentRecordTotalDate)==1){
+                users.setContinuousRecord(users.getContinuousRecord()+1);
+
+            }else{
+                users.setContinuousRecord(1);
+
+            }
+            users.setRecentRecordDate(String.valueOf(posts.getCreatedDate()).substring(0,10));
+
+
+
             /**
              * 연속 뱃지 관련여부 체크
+             * 3-1. 연속3일 체크
+             * 3-2. 연속 30일
              */
+            if(badgeStateList.get(0)=='1'){
+
+                // 30일 연속체크 여부 확인
+                if(badgeStateList.get(1)=='0'&& users.getContinuousRecord()>=30){
+                    badgeNotifyList.add(1);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(1, '1');
+                    users.setBadgeState(badgeList.toString());
+                }
+
+            }else {
+                if(users.getContinuousRecord()>=3){
+                    badgeNotifyList.add(0);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(0, '1');
+                    users.setBadgeState(badgeList.toString());
+                }
+            }
 
 
             /**
@@ -165,6 +208,20 @@ public class PostsService {
                     badgeNotifyList.add(5);
                     StringBuilder badgeList = new StringBuilder(badgeState);
                     badgeList.setCharAt(5, '1');
+                    users.setBadgeState(badgeList.toString());
+                }
+            }
+
+            /**
+             * 3-7 5일쉬다가 기록발행한경우
+             */
+
+            if(badgeStateList.get(6)=='0'){
+                // 123456
+                if((thisRecordTotalDate-recentRecordTotalDate)>5){
+                    badgeNotifyList.add(6);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(6, '1');
                     users.setBadgeState(badgeList.toString());
                 }
             }
@@ -375,6 +432,51 @@ public class PostsService {
 
         }
         return postsByDay;
+
+
+    }
+
+    public int calculateTotalDay(int year,int month,int day){
+        int result =0;
+        boolean isLeapYear=false;
+        if(year%4==0){
+            isLeapYear=true;
+        }
+
+
+        result = (year-1)*365 + (int)(year-1)/4;
+
+        if(month==1){
+            result+= day;
+        }else if(month==2){
+            result+= 31+day;
+        }else if(month==3){
+            result+= 59+day;
+        }else if(month==4){
+            result+= 90+day;
+        }else if(month==5){
+            result+= 120+day;
+        }else if(month==6){
+            result+= 151+day;
+        }else if(month==7){
+            result+= 181+day;
+        }else if(month==8){
+            result+= 212+day;
+        }else if(month==9){
+            result+= 243+day;
+        }else if(month==10){
+            result+= 273+day;
+        }else if(month==11){
+            result+= 304+day;
+        }else if(month==12){
+            result+= 334+day;
+        }
+
+        if(isLeapYear==true && month>=3){
+            result+=1;
+        }
+
+        return result;
 
 
     }
