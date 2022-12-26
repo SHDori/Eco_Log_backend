@@ -90,31 +90,31 @@ public class UserServieTest {
     }
 
 
-    @Test
-    public void 유저_검색_이메일(){
-        // given
-        Users users1 = createUser(0L,"김승환","vw9801@naver.com");
-        Users users2 = createUser(1L,"김강민","kgm1515@gmail.com");
-        Users users3 = createUser(2L,"최지훈","cjh1515@naver.com");
-
-        makeBehaviors();
-        // 1이 2를팔로우
-        // 1이 2를 검색시 이미 팔로우가 되어있어야함
-        followService.makeFollowRelation(users1.getId(),users2.getId());
-        PostSaveRequestDto saveRequestDto = getSaveRequestDto("2022-08-22");
-        Long postsId = postsService.save(users2.getId(),saveRequestDto).getPostId();
-        // when
-
-        List<UserSearchResponseDto> searchResult = userServie.getSearchUserList(users1.getId(),"1515");
-
-
-        //then
-        System.out.println(searchResult);
-        Assert.assertEquals("1515의 검색결과는 2명이 나와야한다", 2, searchResult.size());
-
-
-
-    }
+//    @Test
+//    public void 유저_검색_이메일(){
+//        // given
+//        Users users1 = createUser(0L,"김승환","vw9801@naver.com");
+//        Users users2 = createUser(1L,"김강민","kgm1515@gmail.com");
+//        Users users3 = createUser(2L,"최지훈","cjh1515@naver.com");
+//
+//        makeBehaviors();
+//        // 1이 2를팔로우
+//        // 1이 2를 검색시 이미 팔로우가 되어있어야함
+//        followService.makeFollowRelation(users1.getId(),users2.getId());
+//        PostSaveRequestDto saveRequestDto = getSaveRequestDto("2022-08-22");
+//        Long postsId = postsService.save(users2.getId(),saveRequestDto).getPostId();
+//        // when
+//
+//        List<UserSearchResponseDto> searchResult = userServie.getSearchUserList(users1.getId(),"1515");
+//
+//
+//        //then
+//        System.out.println(searchResult);
+//        Assert.assertEquals("1515의 검색결과는 2명이 나와야한다", 2, searchResult.size());
+//
+//
+//
+//    }
 
     @Test
     public void 유저_검색_닉네임(){
