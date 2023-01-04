@@ -23,7 +23,10 @@ public class HeartController {
     public ResponseEntity<List> pushPostHeart(HttpServletRequest request, @RequestBody HeartRequestDto requestDto){
         Long userId = (Long) request.getAttribute("userId");
         List<Integer> result = heartService.makeHeartInfo(userId,requestDto.getTargetPostId());
-        if(result.get(0)==-1){
+        if(result.size()==0){
+            return ResponseEntity.ok().body(result);
+        }else if(result.get(0)==-1){
+
             List<String> msg = new ArrayList<>();
             msg.add("이미 하트가 눌려있습니다");
             return ResponseEntity.badRequest().body(msg);

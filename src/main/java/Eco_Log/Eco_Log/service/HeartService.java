@@ -33,6 +33,7 @@ public class HeartService {
 
         Heart heartCheck = heartRepository.findSpecificHeartInfo(fromUserId,toPostId);
 
+
         if(heartCheck==null) {
             Heart heart = Heart.createHeart(targetPost, fromUserId);
             heartRepository.save(heart);
@@ -67,6 +68,7 @@ public class HeartService {
             //return heart.toString();
         }else{
             List<Integer> result = new ArrayList<>();
+            result.add(-1);
             result.add(-1);
             return result;
         }
