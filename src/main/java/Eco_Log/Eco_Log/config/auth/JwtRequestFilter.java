@@ -54,20 +54,32 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         System.out.println("secretKey => "+secretKey);
 
         try {
+            System.out.println("============>이거보이나? 1");
             userId = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token)
                         .getClaim("userId").asLong();
 
-            System.out.println("============>아무문제 없었다");
+            System.out.println("============>이거보이나? 2");
         } catch (TokenExpiredException e){
             e.printStackTrace(); // 401 프론트에 날리자
             request.setAttribute(JwtProperties.HEADER_STRING,"토큰이 만료되었습니다.");
+            System.out.println("============>이거보이나? 3");
         }catch (SignatureVerificationException e) {
+            e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 Signature입니다.");
+            System.out.println("============>이거보이나? 4");
         } catch (JWTVerificationException e){
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING,"유효하지 않은 토큰입니다.");
+            System.out.println("============>이거보이나? 5");
         }catch (IllegalArgumentException e) {
+            e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 토큰입니다.");
+            System.out.println("============>이거보이나? 6");
+        }catch (Exception e){
+            e.printStackTrace();
+            request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 토큰입니다.");
+            System.out.println("============>이거보이나? 7");
+            System.out.println(e.getMessage());
         }
 
         request.setAttribute("userId",userId);
