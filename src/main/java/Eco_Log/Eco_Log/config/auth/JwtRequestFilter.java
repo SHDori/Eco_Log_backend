@@ -56,6 +56,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             userId = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token)
                         .getClaim("userId").asLong();
+
+            System.out.println("============>아무문제 없었다");
         } catch (TokenExpiredException e){
             e.printStackTrace(); // 401 프론트에 날리자
             request.setAttribute(JwtProperties.HEADER_STRING,"토큰이 만료되었습니다.");
