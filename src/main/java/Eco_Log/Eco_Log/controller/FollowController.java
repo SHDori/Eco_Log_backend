@@ -40,6 +40,18 @@ public class FollowController {
 
 
     /**
+     * 팔로워 취소
+     */
+    @DeleteMapping("/user/follower")
+    public ResponseEntity cancelFollower(HttpServletRequest request, @RequestBody FollowRequestDto followRequestDto){
+        Long userId = (Long) request.getAttribute("userId");
+        String resultMsg =followService.deleteFollowerRelation(userId,followRequestDto.getTargetId());
+
+        return ResponseEntity.ok().body(resultMsg);
+    }
+
+
+    /**
      * 팔로잉 조회(내가 from유저)
      */
     @GetMapping("/user/following")

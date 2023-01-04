@@ -102,6 +102,34 @@ public class FollowServiceTest {
 
     }
 
+
+    @Test
+    public void 팔로워_끊기(){
+
+        // given
+        // given
+        Users users1 = createUser(0L,"김승환");
+        Users users2 = createUser(1L,"김강민");
+        Users users3 = createUser(2L,"최지훈");
+
+        // user1은 user2의 팔로워
+        followService.makeFollowRelation(users1.getId(),users2.getId());
+        followService.makeFollowRelation(users1.getId(),users3.getId());
+        followService.makeFollowRelation(users3.getId(),users2.getId());
+
+
+        // when
+        followService.deleteFollowerRelation(users2.getId(),users1.getId());
+
+        //then
+
+        List<Follow> user1FollowingList = followRepository.findMyFollowingByUserId(users1.getId());
+        System.out.println(user1FollowingList);
+        Assert.assertEquals("User2의 Follower은 1명이어야한다",1, user1FollowingList.size());
+
+
+    }
+
     @Test
     public void 팔로워_팔로잉_조회(){
         // given

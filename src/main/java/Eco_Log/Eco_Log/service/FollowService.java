@@ -78,6 +78,24 @@ public class FollowService {
         return fromUser.getId()+"유저가 "+toUser.getId()+"유저의 follow를 취소했습니다.";
     }
 
+    /**
+     * 팔로워 취소
+     */
+    public String deleteFollowerRelation(Long fromUserId,Long toUserId){
+
+        Users fromUser = userRepository.findById(fromUserId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ fromUserId));
+        Users toUser = userRepository.findById(toUserId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 User가 없습니다. id = "+ toUserId));
+
+        ///
+        Follow targetFollowInfo = followRepository.findSpecificFollowInfo(toUserId,fromUserId)
+                .orElseThrow(()-> new IllegalArgumentException(fromUser.getProfiles().getNickName()+"이 "+toUser.getProfiles().getNickName()+"을 Follow하지 않습니다." ));
+        followRepository.delete(targetFollowInfo);
+
+        return fromUser.getId()+"유저가 "+toUser.getId()+"유저의 follow를 취소했습니다.";
+    }
+
     @Transactional(readOnly = true)
     public boolean isFallowCheck(Long fromUserId,Long toUserId){
         Follow followInfo = followRepository.findSpecificFollowInfoNoOptional(fromUserId,toUserId);
@@ -111,6 +129,8 @@ public class FollowService {
         return  responseDtos;
 
     }
+
+
 
 
     /**
