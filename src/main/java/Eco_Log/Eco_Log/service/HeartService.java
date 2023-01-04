@@ -31,39 +31,45 @@ public class HeartService {
         Posts targetPost = postsRepository.findById(toPostId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다. id = "+ toPostId));
 
+        Heart heartCheck = heartRepository.findSpecificHeartInfo(fromUserId,toPostId);
 
+        if(heartCheck==null) {
+            Heart heart = Heart.createHeart(targetPost, fromUserId);
+            heartRepository.save(heart);
 
-        Heart heart = Heart.createHeart(targetPost,fromUserId);
-        heartRepository.save(heart);
+            List<Integer> badgeNotifyList = new ArrayList<>();
 
-        List<Integer> badgeNotifyList = new ArrayList<>();
+            String badgeState = fromUser.getBadgeState();
+            List<Character> badgeStateList = new ArrayList<>();
 
-        String badgeState = fromUser.getBadgeState();
-        List<Character> badgeStateList = new ArrayList<>();
-
-        for(int i=0;i<badgeState.length();i++){
-            badgeStateList.add(badgeState.charAt(i));
-        }
-
-        if(badgeStateList.get(8)=='0'){
-            // 123456
-            if(heartRepository.findOtherPostHeartList(fromUserId).size()>=3){
-                badgeNotifyList.add(8);
-                StringBuilder badgeList = new StringBuilder(badgeState);
-                badgeList.setCharAt(8, '1');
-                fromUser.setBadgeState(badgeList.toString());
+            for (int i = 0; i < badgeState.length(); i++) {
+                badgeStateList.add(badgeState.charAt(i));
             }
-        }else if(badgeStateList.get(9)=='0'){
-            if(heartRepository.findOtherPostHeartList(fromUserId).size()>=30){
-                badgeNotifyList.add(9);
-                StringBuilder badgeList = new StringBuilder(badgeState);
-                badgeList.setCharAt(9, '1');
-                fromUser.setBadgeState(badgeList.toString());
-            }
-        }
 
-        return badgeNotifyList;
-        //return heart.toString();
+            if (badgeStateList.get(8) == '0') {
+                // 123456
+                if (heartRepository.findOtherPostHeartList(fromUserId).size() >= 3) {
+                    badgeNotifyList.add(8);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(8, '1');
+                    fromUser.setBadgeState(badgeList.toString());
+                }
+            } else if (badgeStateList.get(9) == '0') {
+                if (heartRepository.findOtherPostHeartList(fromUserId).size() >= 30) {
+                    badgeNotifyList.add(9);
+                    StringBuilder badgeList = new StringBuilder(badgeState);
+                    badgeList.setCharAt(9, '1');
+                    fromUser.setBadgeState(badgeList.toString());
+                }
+            }
+
+            return badgeNotifyList;
+            //return heart.toString();
+        }else{
+            List<Integer> result = new ArrayList<>();
+            result.add(-1);
+            return result;
+        }
     }
 
 
