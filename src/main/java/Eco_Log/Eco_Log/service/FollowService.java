@@ -93,7 +93,7 @@ public class FollowService {
                 .orElseThrow(()-> new IllegalArgumentException(fromUser.getProfiles().getNickName()+"이 "+toUser.getProfiles().getNickName()+"을 Follow하지 않습니다." ));
         followRepository.delete(targetFollowInfo);
 
-        return fromUser.getId()+"유저가 "+toUser.getId()+"유저의 follow를 취소했습니다.";
+        return fromUser.getId()+"유저의 팔로워"+toUser.getId()+"를 follow 취소했습니다.";
     }
 
     @Transactional(readOnly = true)
