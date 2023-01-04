@@ -3,6 +3,7 @@ package Eco_Log.Eco_Log.config;
 
 
 import Eco_Log.Eco_Log.config.auth.CustomAuthenticationEntryPoint;
+import Eco_Log.Eco_Log.config.auth.JwtExceptionFilter;
 import Eco_Log.Eco_Log.config.auth.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,7 @@ public class SecurityConfig {
                 // UsernamePasswordAuthenticationFilter 직전에 JWT RequestFilter를 실행하기위해 addFilterBefor로 추가해준다.
                 .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 
-
+                .addFilterBefore(new JwtExceptionFilter(),JwtRequestFilter.class)
                 .authorizeRequests()
                 ///// 이부분 권한 설정 고민필요
                 //.antMatchers(FRONT_URL+"/main/**")

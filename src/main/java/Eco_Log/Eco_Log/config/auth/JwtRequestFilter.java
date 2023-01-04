@@ -1,5 +1,6 @@
 package Eco_Log.Eco_Log.config.auth;
 
+import Eco_Log.Eco_Log.config.exeception.JwtException;
 import Eco_Log.Eco_Log.domain.jwt.JwtProperties;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import Eco_Log.Eco_Log.service.JwtService;
@@ -63,23 +64,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             e.printStackTrace(); // 401 프론트에 날리자
             request.setAttribute(JwtProperties.HEADER_STRING,"토큰이 만료되었습니다.");
             System.out.println("============>이거보이나? 3");
+            throw new JwtException("토큰이 만료되었습니다.");
         }catch (SignatureVerificationException e) {
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 Signature입니다.");
             System.out.println("============>이거보이나? 4");
+            throw new JwtException("잘못된 Signature입니다.");
         } catch (JWTVerificationException e){
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING,"유효하지 않은 토큰입니다.");
             System.out.println("============>이거보이나? 5");
+            throw new JwtException("유효하지 않은 토큰입니다.");
         }catch (IllegalArgumentException e) {
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 토큰입니다.");
             System.out.println("============>이거보이나? 6");
+            throw new JwtException("잘못된 토큰입니다.");
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 토큰입니다.");
             System.out.println("============>이거보이나? 7");
+
             System.out.println(e.getMessage());
+            throw new JwtException("잘못된 토큰입니다.");
+
+
         }
 
         request.setAttribute("userId",userId);
