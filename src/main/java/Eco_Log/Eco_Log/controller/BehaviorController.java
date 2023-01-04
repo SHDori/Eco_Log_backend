@@ -2,6 +2,7 @@ package Eco_Log.Eco_Log.controller;
 
 
 import Eco_Log.Eco_Log.controller.dto.BehaviorNameChangeRequestDto;
+import Eco_Log.Eco_Log.controller.dto.BehaviorViewResponseDto;
 import Eco_Log.Eco_Log.controller.dto.BehaviorsDto;
 import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.repository.BehaviorRepository;
@@ -30,10 +31,10 @@ public class BehaviorController {
 //    }
 
     @GetMapping("/behavior")
-    public ResponseEntity<List<BehaviorsDto>> getAllBehaviors(){
-        List<BehaviorsDto> behaviorsList = behaviorRepository.getAllBehavior();
+    public ResponseEntity<BehaviorViewResponseDto> getAllBehaviors(){
 
-        return ResponseEntity.ok().body(behaviorsList);
+
+        return ResponseEntity.ok().body(behaviorService.getAllBehaviors());
     }
 
     @PutMapping("/behavior")

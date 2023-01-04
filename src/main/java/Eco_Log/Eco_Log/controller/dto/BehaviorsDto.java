@@ -2,8 +2,10 @@ package Eco_Log.Eco_Log.controller.dto;
 
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class BehaviorsDto {
 
     private Long behaviorId;
