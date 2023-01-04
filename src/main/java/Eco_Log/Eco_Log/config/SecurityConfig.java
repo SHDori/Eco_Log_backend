@@ -35,6 +35,13 @@ public class SecurityConfig {
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
+//                .addFilter(corsFilter)
+
+
+                // UsernamePasswordAuthenticationFilter 직전에 JWT RequestFilter를 실행하기위해 addFilterBefor로 추가해준다.
+                .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+
+
                 .authorizeRequests()
                 ///// 이부분 권한 설정 고민필요
                 //.antMatchers(FRONT_URL+"/main/**")
@@ -46,39 +53,8 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 // h2사용을 위한것 배포때는 없애고 ㄱㄱ
-                .headers().frameOptions().disable().and()
-//                .addFilter(corsFilter)
-                // UsernamePasswordAuthenticationFilter 직전에 JWT RequestFilter를 실행하기위해 addFilterBefor로 추가해준다.
-                .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-
-
-
-                .build();
-
-
-
-
-
-        ///////////////////////////////
-
-
-//                // UsernamePasswordAuthenticationFilter 직전에 JWT RequestFilter를 실행하기위해 addFilterBefor로 추가해준다.
-//                .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-//
-//
-//                .authorizeRequests()
-//                ///// 이부분 권한 설정 고민필요
-//                //.antMatchers(FRONT_URL+"/main/**")
-//                //.authenticated()
-//                .anyRequest().permitAll()
-//                //////
-//                .and()
-//                .exceptionHandling()
-//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-//                .and()
-//                // h2사용을 위한것 배포때는 없애고 ㄱㄱ
-//                .headers().frameOptions().disable()
-//                .and().build();
+                .headers().frameOptions().disable()
+                .and().build();
 
 
 
