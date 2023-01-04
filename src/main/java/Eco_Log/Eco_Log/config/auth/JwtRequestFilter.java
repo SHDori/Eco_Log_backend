@@ -6,6 +6,7 @@ import Eco_Log.Eco_Log.service.JwtService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 
@@ -58,9 +59,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } catch (TokenExpiredException e){
             e.printStackTrace(); // 401 프론트에 날리자
             request.setAttribute(JwtProperties.HEADER_STRING,"토큰이 만료되었습니다.");
+        }catch (SignatureVerificationException e) {
+            request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 Signature입니다.");
         } catch (JWTVerificationException e){
             e.printStackTrace();
             request.setAttribute(JwtProperties.HEADER_STRING,"유효하지 않은 토큰입니다.");
+        }catch (IllegalArgumentException e) {
+            request.setAttribute(JwtProperties.HEADER_STRING, "잘못된 토큰입니다.");
         }
 
         request.setAttribute("userId",userId);

@@ -20,12 +20,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         String errorCode;
 
         if(exception.equals("토큰이 만료되었습니다.")){
-            errorCode = "토큰이 만료되었습니다.";
+            errorCode = "토큰이 만료되었습니다.(TokenExpiredException)";
             setResponse(response,errorCode);
         }
 
-        else if(exception.equals("유효하지 않은 토큰입니다.")) {
-            errorCode = "유효하지 않은 토큰입니다.";
+        else if(exception.equals("잘못된 Signature입니다.")) {
+            errorCode = "잘못된 Signature입니다.(SignatureVerificationException)";
+            setResponse(response, errorCode);
+        }else if(exception.equals("유효하지 않은 토큰입니다.")) {
+            errorCode = "유효하지 않은 토큰입니다.(JWTVerificationException)";
+            setResponse(response, errorCode);
+        }else if(exception.equals("잘못된 토큰입니다.")) {
+            errorCode = "잘못된 토큰입니다.(IllegalArgumentException)";
             setResponse(response, errorCode);
         }
 
@@ -33,8 +39,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     }
 
     private void setResponse(HttpServletResponse response, String errorCode) throws IOException{
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().println(JwtProperties.HEADER_STRING + " : "+errorCode);
     }
 }
