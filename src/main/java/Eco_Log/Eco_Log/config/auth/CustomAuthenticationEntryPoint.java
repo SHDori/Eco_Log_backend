@@ -15,9 +15,11 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-
+        System.out.println("Commence에 들어오긴하나");
         String exception = (String) request.getAttribute(JwtProperties.HEADER_STRING);
         String errorCode;
+        System.out.println("exception이 있나?");
+        System.out.println(exception);
 
         if(exception.equals("토큰이 만료되었습니다.")){
             System.out.println("토큰이 만료되었습니다.");
