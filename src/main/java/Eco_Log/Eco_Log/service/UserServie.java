@@ -12,6 +12,7 @@ import Eco_Log.Eco_Log.domain.user.dto.NaverProfile;
 import Eco_Log.Eco_Log.repository.PRconnectRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -331,7 +332,7 @@ public class UserServie {
         );
 
         // Json응답을 객체로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         GoogleProfile googleProfile = null;
 
         try{
