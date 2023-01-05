@@ -1,10 +1,9 @@
 package Eco_Log.Eco_Log.controller;
 
 
-import Eco_Log.Eco_Log.controller.dto.FollowMakeResponseDto;
-import Eco_Log.Eco_Log.controller.dto.FollowRequestDto;
-import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
-import Eco_Log.Eco_Log.controller.dto.ProfileUpdateRequestDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowMakeResponseDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowRequestDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

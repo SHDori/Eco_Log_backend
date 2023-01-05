@@ -7,6 +7,7 @@ import Eco_Log.Eco_Log.domain.user.Profiles;
 import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.domain.user.dto.KakaoProfile;
+import Eco_Log.Eco_Log.domain.user.dto.NaverProfile;
 import Eco_Log.Eco_Log.repository.PRconnectRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +58,12 @@ public class UserServie {
     @Value("${kakaoClientSecret}")
     private String kakaoClientSecret;
 
+    @Value("${naverClientId}")
+    private String naverClientId;
+
+    @Value("${naverClientSecret}")
+    private String naverClientSecret;
+
 
 
 
@@ -73,6 +80,30 @@ public class UserServie {
         Users user = Users.createUser(name,profile,summary);
         userRepository.save(user);
         return user;
+    }
+
+
+    public String saveNaverUserAndGetJwtToken(String token){
+
+        NaverProfile profile = findNaverProfile(token);
+
+        // 2.프로필 정보를 기반으로 기존에있던 user인지 신규user인지 판단
+
+        Users user = userRepository.findByEmail(profile.getResponse().getEmail());
+
+        if(user == null){
+            ProfileDto profileDto = ProfileDto.builder()
+                    .snsId(0L)
+                    .profileImg(profile.getResponse().getProfile_image())
+                    .email(profile.getResponse().getEmail())
+                    .build();
+
+            // naver 이름과 Profile정보를 넣어서 보내줌
+            user = save(profile.getResponse().getNickname(),profileDto);
+        }
+
+        return jwtService.createToken(user);
+
     }
 
 
@@ -113,6 +144,41 @@ public class UserServie {
                 .nickNamem(user.getProfiles().getNickName())
                 .email(user.getProfiles().getEmail())
                 .build();
+    }
+
+    public OauthToken getNaverAccessToken(String code,String state){
+        RestTemplate rt = new RestTemplate();
+
+        // Header생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.set("grant_type", "authorization_code");
+        params.set("client_id", naverClientId);
+        params.set("client_secret",naverClientSecret);
+        params.set("code",code);
+        params.set("state",state);
+
+        HttpEntity<MultiValueMap<String, String>> naverTokenRequest = new HttpEntity<>(params, headers);
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://nid.naver.com/oauth2.0/token",
+                HttpMethod.POST,
+                naverTokenRequest,
+                String.class
+        );
+        System.out.println("Naver accessToekn수신완료");
+        // Json응답을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        OauthToken oauthToken = null;
+
+        try{
+            oauthToken = objectMapper.readValue(accessTokenResponse.getBody(),OauthToken.class);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        return oauthToken;
     }
 
     public OauthToken getKakaoAccessToken(String code){
@@ -169,6 +235,41 @@ public class UserServie {
         return oauthToken;
 
     }
+
+    public NaverProfile findNaverProfile(String token){
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        // Bearer 띄어쓰기 눈여겨볼것
+        headers.add("Authorization","Bearer "+token);
+        headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String,String>> naverProfileRequest = new HttpEntity<>(headers);
+
+        // Post방식으로 요청해서 Response 객체를 받음
+        ResponseEntity<String> naverProfileResponse = rt.exchange(
+                "https://openapi.naver.com/v1/nid/me",
+                HttpMethod.POST,
+                naverProfileRequest,
+                String.class
+        );
+
+        // Json응답을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        NaverProfile naverProfile = null;
+
+        try{
+            naverProfile = objectMapper.readValue(naverProfileResponse.getBody(),NaverProfile.class);
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        return naverProfile;
+
+    }
+
+
 
 
     public KakaoProfile findKakaoProfile(String token){

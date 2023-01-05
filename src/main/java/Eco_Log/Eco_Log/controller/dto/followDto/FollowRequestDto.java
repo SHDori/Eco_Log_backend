@@ -1,4 +1,4 @@
-package Eco_Log.Eco_Log.controller.dto;
+package Eco_Log.Eco_Log.controller.dto.followDto;
 
 
 

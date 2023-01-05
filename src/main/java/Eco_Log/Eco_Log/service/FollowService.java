@@ -1,13 +1,12 @@
 package Eco_Log.Eco_Log.service;
 
-import Eco_Log.Eco_Log.controller.dto.FollowMakeResponseDto;
-import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowMakeResponseDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Users;
 import Eco_Log.Eco_Log.repository.FollowRepository;
 import Eco_Log.Eco_Log.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

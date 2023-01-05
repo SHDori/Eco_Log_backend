@@ -1,6 +1,6 @@
 package Eco_Log.Eco_Log.service;
 
-import Eco_Log.Eco_Log.controller.dto.FollowViewResponseDto;
+import Eco_Log.Eco_Log.controller.dto.followDto.FollowViewResponseDto;
 import Eco_Log.Eco_Log.controller.dto.ProfileDto;
 import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -16,8 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @RunWith(SpringRunner.class)
