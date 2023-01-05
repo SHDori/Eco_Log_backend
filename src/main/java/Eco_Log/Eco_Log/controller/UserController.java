@@ -74,6 +74,29 @@ public class UserController {
     }
 
 
+    /**
+     * 구글 로그인
+     *
+     */
+    @GetMapping("/oauth/googletoken")
+    public ResponseEntity getGoogleLogin(@RequestParam("code") String code){
+        System.out.println("Get Google Login호출완료 => "+code);
+        // 1. front에서 넘어온 인가코드로 Naver에 Access토큰을 요청후 받아옴
+        GoogleOauthToken oauthToken = userService.getGoogleAccessToken(code);
+
+        System.out.println("Google oauthToken완료"+oauthToken.getAccess_token());
+
+        String jwtToken = userService.saveGoogleUserAndGetJwtToken(oauthToken.getAccess_token());
+        System.out.println("구글 로그인 JWT 토큰 => "+ jwtToken);
+
+        Map<String,String> jwtResult = new HashMap<>();
+        jwtResult.put(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + jwtToken);
+
+        return ResponseEntity.ok().body(jwtResult);
+
+    }
+
+
 
     // 인증된 사용자 정보 반환
     @GetMapping("/me")

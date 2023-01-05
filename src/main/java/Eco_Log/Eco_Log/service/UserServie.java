@@ -6,6 +6,7 @@ import Eco_Log.Eco_Log.domain.Follow;
 import Eco_Log.Eco_Log.domain.user.Profiles;
 import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
+import Eco_Log.Eco_Log.domain.user.dto.GoogleProfile;
 import Eco_Log.Eco_Log.domain.user.dto.KakaoProfile;
 import Eco_Log.Eco_Log.domain.user.dto.NaverProfile;
 import Eco_Log.Eco_Log.repository.PRconnectRepository;
@@ -64,6 +65,13 @@ public class UserServie {
     @Value("${naverClientSecret}")
     private String naverClientSecret;
 
+    @Value("${googleClientId}")
+    private String googleClientId;
+
+    @Value("${googleClientSecret}")
+    private String googleClientSecret;
+
+
 
 
 
@@ -81,6 +89,30 @@ public class UserServie {
         userRepository.save(user);
         return user;
     }
+
+    public String saveGoogleUserAndGetJwtToken(String token){
+        System.out.println("프로필 요청 전 여기 나오나?");
+        GoogleProfile profile = findGoogleProfile(token);
+        // 2.프로필 정보를 기반으로 기존에있던 user인지 신규user인지 판단
+
+        Users user = userRepository.findByEmail(profile.getEmail());
+
+        if(user == null){
+            ProfileDto profileDto = ProfileDto.builder()
+                    .snsId(0L)
+                    .profileImg(profile.getPicture())
+                    .email(profile.getEmail())
+                    .build();
+
+            // naver 이름과 Profile정보를 넣어서 보내줌
+            user = save(profile.getName(),profileDto);
+        }
+
+        return jwtService.createToken(user);
+
+    }
+
+
 
 
     public String saveNaverUserAndGetJwtToken(String token){
@@ -181,6 +213,48 @@ public class UserServie {
         return oauthToken;
     }
 
+    /**
+     * r구글 accessToken획득
+     * @param code
+     * @return
+     */
+    public GoogleOauthToken getGoogleAccessToken(String code){
+        RestTemplate rt = new RestTemplate();
+        // Header생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.set("grant_type", "authorization_code");
+        params.add("redirect_uri", FRONT_URL);
+        params.set("client_id", googleClientId);
+        params.set("client_secret",googleClientSecret);
+        params.set("code",code);
+
+        HttpEntity<MultiValueMap<String, String>> googleTokenRequest = new HttpEntity<>(params, headers);
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://www.googleapis.com/oauth2/v4/token",
+                HttpMethod.POST,
+                googleTokenRequest,
+                String.class
+        );
+
+        System.out.println("Google accessToekn수신완료");
+        // Json응답을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleOauthToken oauthToken = null;
+
+        try{
+            oauthToken = objectMapper.readValue(accessTokenResponse.getBody(),GoogleOauthToken.class);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        return oauthToken;
+
+
+    }
+
     public OauthToken getKakaoAccessToken(String code){
 
         RestTemplate rt = new RestTemplate();
@@ -233,6 +307,41 @@ public class UserServie {
         }
 
         return oauthToken;
+
+    }
+
+
+    public GoogleProfile findGoogleProfile(String token){
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        // Bearer 띄어쓰기 눈여겨볼것
+        headers.add("Authorization","Bearer "+token);
+        headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+
+
+        HttpEntity<MultiValueMap<String,String>> googleProfileRequest = new HttpEntity<>(headers);
+
+        // Post방식으로 요청해서 Response 객체를 받음
+        ResponseEntity<String> GoogleProfileResponse = rt.exchange(
+                "https://www.googleapis.com/oauth2/v1/userinfo",
+                HttpMethod.GET,
+                googleProfileRequest,
+                String.class
+        );
+
+        // Json응답을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleProfile googleProfile = null;
+
+        try{
+            googleProfile = objectMapper.readValue(GoogleProfileResponse.getBody(),GoogleProfile.class);
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        return googleProfile;
+
 
     }
 
