@@ -6,8 +6,7 @@ import Eco_Log.Eco_Log.controller.dto.UserSearchResponseDto;
 import Eco_Log.Eco_Log.controller.dto.postDto.PostSaveRequestDto;
 import Eco_Log.Eco_Log.domain.post.Behaviors;
 import Eco_Log.Eco_Log.domain.user.Users;
-import Eco_Log.Eco_Log.repository.BehaviorRepository;
-import Eco_Log.Eco_Log.repository.UserRepository;
+import Eco_Log.Eco_Log.repository.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,9 +31,11 @@ public class UserServieTest {
     UserRepository userRepository;
 
     @Autowired
-    UserServie userServie;
+    UserServie userService;
     @Autowired
     PostsService postsService;
+    @Autowired
+    HeartService heartService;
 
     @Autowired
     ProfileService profileService;
@@ -42,6 +43,14 @@ public class UserServieTest {
 
     @Autowired
     BehaviorRepository behaviorRepository;
+    @Autowired
+    FollowRepository followRepository;
+
+    @Autowired
+    PostsRepository postsRepository;
+
+    @Autowired
+    HeartRepository heartRepository;
 
     @Autowired
     FollowService followService;
@@ -65,7 +74,7 @@ public class UserServieTest {
 
                 .build();
         //when
-        Users savedUser = userServie.save("김승환",profileDto);
+        Users savedUser = userService.save("김승환",profileDto);
 
 
         //then
@@ -143,8 +152,8 @@ public class UserServieTest {
 
         // when
 
-        List<UserSearchResponseDto> searchResult = userServie.getSearchUserList(users1.getId(),"지구방위");
-        List<UserSearchResponseDto> searchResult2 = userServie.getSearchUserList(users1.getId(),"1515");
+        List<UserSearchResponseDto> searchResult = userService.getSearchUserList(users1.getId(),"지구방위");
+        List<UserSearchResponseDto> searchResult2 = userService.getSearchUserList(users1.getId(),"1515");
 
         //then
         System.out.println(searchResult);
@@ -152,6 +161,38 @@ public class UserServieTest {
         Assert.assertEquals("지구방위 검색결과는 1명이 나와야한다", 1, searchResult.size());
         Assert.assertEquals("지구방위 검색결과는 1명이 나와야한다", 1, searchResult2.size());
 
+
+    }
+
+
+
+    @Test
+    public void 유저_삭제_테스트(){
+        // given
+        Users users1 = createUser(0L,"김승환","vw9801@naver.com");
+        Users users2 = createUser(1L,"김강민","kgm1515@gmail.com");
+        Users users3 = createUser(2L,"최지훈","cjh1515@naver.com");
+
+        makeBehaviors();
+
+        followService.makeFollowRelation(users1.getId(),users2.getId());
+        followService.makeFollowRelation(users2.getId(),users3.getId());
+        //user2가 게시물 저장
+        PostSaveRequestDto saveRequestDto = getSaveRequestDto("2022-08-22");
+        Long postsId = postsService.save(users2.getId(),saveRequestDto).getPostId();
+
+        // 유저1이 유저2게시물에 좋아요
+        heartService.makeHeartInfo(users1.getId(),postsId);
+
+        // when
+        userService.deleteUser(users2.getId());
+
+
+        //then
+        Assert.assertEquals("유저 삭제 후 모든 유저는 2명이다", 2,userRepository.findAll().size() );
+        Assert.assertEquals("모든 팔로우 관계는 0이다", 0, followRepository.findAll().size());
+        Assert.assertEquals("모든 좋아요는 0이다", 0, heartRepository.findAll().size());
+        Assert.assertEquals("모든 게시물은 0이다", 0, postsRepository.findAll().size());
 
     }
 
@@ -168,7 +209,7 @@ public class UserServieTest {
 
                 .build();
         //when
-        Users savedUser = userServie.save(name,profileDto);
+        Users savedUser = userService.save(name,profileDto);
         return savedUser;
     }
 

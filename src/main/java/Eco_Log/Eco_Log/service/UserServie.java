@@ -3,6 +3,7 @@ package Eco_Log.Eco_Log.service;
 
 import Eco_Log.Eco_Log.controller.dto.*;
 import Eco_Log.Eco_Log.domain.Follow;
+import Eco_Log.Eco_Log.domain.post.Posts;
 import Eco_Log.Eco_Log.domain.user.Profiles;
 import Eco_Log.Eco_Log.domain.user.Summary;
 import Eco_Log.Eco_Log.domain.user.Users;
@@ -54,6 +55,8 @@ public class UserServie {
 
     private final FollowService followService;
 
+    private final HeartService heartService;
+
     @Value("${kakaoClientId}")
     private String kakaoClientId;
 
@@ -89,6 +92,69 @@ public class UserServie {
         Users user = Users.createUser(name,profile,summary);
         userRepository.save(user);
         return user;
+    }
+
+    /**
+     *
+     * @param targetUserId
+     * @return
+     *
+     * 1. 유저 팔로우 찾고 삭제
+     * 2. 유저 팔로워 찾고 삭제
+     * 3. 유저 하트 찾고 삭제
+     * 4. 모든게시물 삭제
+     * 5. 유저 프로필 삭제
+     * 6. 유저 삭제
+     */
+
+    @Transactional
+    public boolean deleteUser(Long targetUserId){
+
+
+        Users targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 유저가 없습니다. id = "+targetUserId));
+
+
+        // 1. 유저 팔로우 찾고 삭제
+        // 2. 유저 팔로워 찾고 삭제
+        String followInfoWhenDeleteUserResult = followService.deleteAllFollowWhenDeleteUser(targetUserId);
+        System.out.println(followInfoWhenDeleteUserResult);
+
+        // 3.유저 하트 찾고 삭제
+        String allHeartInfoDeleteResult = heartService.deleteAllHeartWhenDeleteUser(targetUserId);
+        System.out.println(allHeartInfoDeleteResult);
+
+        //4. 모든게시물 삭제
+
+        List<Posts> targetPosts = targetUser.getPosts();
+        List<Long> targetPostIdList = new ArrayList<>();
+        for(Posts targetPost : targetPosts){
+            targetPostIdList.add(targetPost.getId());
+        }
+
+        for(Long targetPostId : targetPostIdList){
+            postsService.delete(targetUserId,targetPostId);
+        }
+
+        //5. 유저 프로필 삭제
+        //6. 유저 삭제
+        userRepository.delete(targetUser);
+
+        Users resultTestUser = userRepository.findByUserID(targetUserId);
+
+        if(resultTestUser== null){
+            return true;
+        }else{
+            return false;
+        }
+
+
+
+
+
+
+
+
     }
 
     public String saveGoogleUserAndGetJwtToken(String token){

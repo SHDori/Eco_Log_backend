@@ -173,6 +173,20 @@ public class UserController {
 
     }
 
+    @DeleteMapping("/user")
+    public ResponseEntity deleteUser(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        boolean result = userService.deleteUser(userId);
+
+        if(result){
+            return ResponseEntity.ok().body("성공적으로 삭제하였습니다.");
+        }else{
+            return ResponseEntity.badRequest().body("관리자의 확인이필요합니다.");
+        }
+
+    }
+
+
 
 
 

@@ -113,4 +113,18 @@ public class HeartService {
     public List<Heart> findAllHeartByPostId(Long postId){
         return heartRepository.findAllByPostsId(postId);
     }
+
+    /**
+     * 유저 삭제시 모든 하트 제거
+     */
+    public String deleteAllHeartWhenDeleteUser(Long targetUserId){
+        List<Heart> targetHearts = heartRepository.findAllByUserId(targetUserId);
+        int heartCount = targetHearts.size();
+        for(Heart heart: targetHearts){
+            heartRepository.delete(heart);
+        }
+
+        return "총 "+heartCount+"개의 좋아요 정보를 삭제하였습니다.";
+
+    }
 }

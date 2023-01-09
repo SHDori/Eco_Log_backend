@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query("SELECT u FROM Users u left join u.profiles p WHERE p.email = ?1")
     Users findByEmail(String email);
 
+    @Query("SELECT u From Users u WHERE u.id =:uid")
+    Users findByUserID(@Param("uid") Long uid);
+
     @Query("select u from Users u Where u.profiles.isPublic=true And u.profiles.email Like %:word% OR  u.profiles.isPublic=true And u.profiles.nickName Like %:word%")
     List<Users> findUsersBySearchWord(@Param("word") String word);
 

@@ -154,4 +154,35 @@ public class FollowService {
         return responseDtos;
 
     }
+
+    /**
+     * 유저 삭제시 모든 팔로워 팔로잉 관계 정리
+     */
+
+    public String deleteAllFollowWhenDeleteUser(Long targetUserId){
+
+        List<Follow> myFollowers = followRepository.findMyFollowerByUserId(targetUserId);
+        List<Follow> myFollowings = followRepository.findMyFollowingByUserId(targetUserId);
+        int followerCount =0;
+        // 모든 팔로워 삭제
+        for(Follow target : myFollowers){
+            followRepository.delete(target);
+            followerCount++;
+        }
+
+        int followingCount = 0;
+        // 모든 팔로잉 삭제
+        for(Follow target : myFollowings){
+            followRepository.delete(target);
+            followingCount++;
+        }
+
+        return "총 "+followerCount+"명의 팔로워와 "+followingCount+"명의 팔로잉 데이터를 삭제했습니다.";
+
+
+
+
+
+
+    }
 }
