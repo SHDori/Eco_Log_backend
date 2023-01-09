@@ -181,7 +181,7 @@ public class UserController {
 
         boolean result;
         if(targetPlatform.equals("kakao")){
-            result = userService.unLinkAppFromKakao(userId);
+            result = userService.deleteUser(userId);
         }else if(targetPlatform.equals("google") || (targetPlatform.equals("naver"))){
             result = userService.deleteUser(userId);
         }else{
