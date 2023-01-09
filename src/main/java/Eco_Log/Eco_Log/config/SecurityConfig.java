@@ -24,7 +24,9 @@ public class SecurityConfig {
     //private final CorsFilter corsFilter;
 
     //public static final String FRONT_URL = "http://localhost:8080/api/oauth/kakaotoken";
-    public static final String FRONT_URL = "http://localhost:3000/oauth";
+    //public static final String FRONT_URL = "http://localhost:3000/oauth";
+    // 배포용
+    public static final String FRONT_URL = "https://peppy-bonbon-ea3a7a.netlify.app/";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
