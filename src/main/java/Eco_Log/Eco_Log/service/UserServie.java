@@ -62,6 +62,9 @@ public class UserServie {
 
     @Value("${kakaoClientSecret}")
     private String kakaoClientSecret;
+    @Value("${kakaoAppAdminKey}")
+    private String kakaoAppAdminKey;
+
 
     @Value("${naverClientId}")
     private String naverClientId;
@@ -570,4 +573,42 @@ public class UserServie {
 
         return searchResultUserList;
     }
+
+    /**
+     * 연결 끊기
+     * 1. 카카오
+     * 2. 네이버
+     * 3. 구글
+     */
+    @Transactional
+    public boolean unLinkAppFromKakao(Long targetUserId){
+
+        Users targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 유저가 없습니다. id = "+targetUserId));
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type","application/x-www-form-urlencoded");
+        headers.add("Authorization","KakaoAK "+kakaoAppAdminKey);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("target_id_type", "user_id");
+        params.add("target_id", String.valueOf(targetUser.getProfiles().getSnsId()));
+
+        HttpEntity<MultiValueMap<String,String>> kakaoUnlinkRequest = new HttpEntity<>(headers,params);
+        // Post방식으로 요청해서 Response 객체를 받음
+        ResponseEntity<String> unlinkKakaoResponse = rt.exchange(
+                "https://kapi.kakao.com/v1/user/unlink",
+                HttpMethod.POST,
+                kakaoUnlinkRequest,
+                String.class
+        );
+
+        return deleteUser(targetUserId);
+    }
+
+
+
+
+
 }

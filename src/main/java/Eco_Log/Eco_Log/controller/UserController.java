@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -174,9 +175,19 @@ public class UserController {
     }
 
     @DeleteMapping("/user")
-    public ResponseEntity deleteUser(HttpServletRequest request){
+    public ResponseEntity deleteUser(HttpServletRequest request,@RequestParam("platform")String platform){
         Long userId = (Long) request.getAttribute("userId");
-        boolean result = userService.deleteUser(userId);
+        String targetPlatform = platform.toLowerCase();
+
+        boolean result;
+        if(targetPlatform.equals("kakao")){
+            result = userService.unLinkAppFromKakao(userId);
+        }else if(targetPlatform.equals("google") || (targetPlatform.equals("naver"))){
+            result = userService.deleteUser(userId);
+        }else{
+            result = false;
+        }
+
 
         if(result){
             return ResponseEntity.ok().body("성공적으로 삭제하였습니다.");
