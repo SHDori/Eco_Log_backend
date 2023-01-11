@@ -34,7 +34,7 @@ public class CorsFilter implements Filter {
 //            response.setHeader("Access-Control-Allow-Origin", origin);
 //        }
 
-        if (origin.endsWith("https://peppy-bonbon-ea3a7a.netlify.app") || origin.endsWith("http://172.30.1.71:3000")|| origin.endsWith("http://192.168.0.155:3000")) {
+        if (origin.endsWith("https://peppy-bonbon-ea3a7a.netlify.app") || origin.endsWith("http://192.168.35.251:3000")|| origin.endsWith("http://192.168.0.155:3000")) {
 
             response.setHeader("Access-Control-Allow-Origin", origin);
         }
